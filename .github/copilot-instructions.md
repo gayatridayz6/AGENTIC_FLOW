@@ -43,3 +43,29 @@ Operate strictly within this layout (repo root = `agenticaiworkflow/`):
 ## 8. Audit
 - Every tool call is appended to `logs/audit.jsonl` by `.github/hooks/post_tool_use_audit.py`.
 - Every HITL decision is recorded in `state/run.json` and `state/summary.md` (`hitl-audit-writer` skill).
+
+## 9. Context Management & Compaction
+- Treat `state/summary.md` as the single rolling source of truth for run progress; it is rewritten/appended at the end of every phase, never left stale.
+- Prefer **one session per phase** for long pipelines: a subagent reads only `spec.json`/`design.json`/its own inputs, not the full conversation history of prior phases.
+- If a session's context grows large (long logs, large diffs, verbose stack traces), summarize to a 5-line digest + artifact path before continuing — do not paste full logs back into the model's working context. Full detail always lives in `workspace/artifacts/<agent>/`, never only in-context.
+- Static reference material (`copilot-instructions.md`, `.github/skills/*/SKILL.md`, `.github/prompts/*_instructions.md`) must be read once per session and not re-pasted into every turn.
+
+## 10. Long-Term Memory (`state/memory.json`)
+- `state/memory.json` persists facts across runs: known flaky tests, environment quirks, reviewer preferences, and recurring validation failures.
+- `5.heal_agent` **writes** to it after every self-heal run: append `{"flaky_tests": [...], "last_run_notes": "..."}` under `learned_patterns`.
+- `1.req_agent` and `2.arch_agent` **read** it at the start of their phase to avoid repeating previously flagged mistakes (e.g., a past reviewer preference on naming, a known-flaky endpoint).
+- Only the orchestrator may write top-level keys; subagents append to their own named sub-array via the orchestrator on their behalf.
+
+## 11. Token Budgets & Circuit Breakers
+- Each phase has a soft token budget; if a subagent's single turn exceeds ~8K output tokens without producing its artifact, stop and report `status: budget_exceeded` rather than continuing indefinitely.
+- Combined with the hard retry cap (Section 7, max 3), this prevents runaway cost on both looping and single-turn bloat.
+- `scripts/cost_monitor.py` is run after every phase (not just at the end) so cost overruns are caught early, not only in the final dashboard.
+
+## 12. Caching
+- Static context (this file, Skill files, phase instructions) must remain stable and unedited for the duration of a single pipeline run so prefix caching is effective.
+- Do not hot-edit `.github/copilot-instructions.md` or any `.github/skills/*/SKILL.md` mid-run; changes apply to the *next* run only.
+
+## 13. Data Handling
+- Use synthetic or masked data only. No real customer data, production credentials, or personal data may appear in the repository, in prompts, in `workspace/artifacts/`, or in `logs/`.
+- Jira tickets, PR descriptions, and test fixtures used in this pipeline must be demo/synthetic content.
+

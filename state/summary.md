@@ -1,7 +1,8 @@
-# Run Summary
+# Run Summary — run-20261031-001
 
-- **Status:** not started
+- **Status:** running
+- **Story:** EPMCDMETST-70442
 - **HITL gate:** `state/.approval` not present
 
 ## Log
-- _No entries yet._
+- [2026-10-31T00:00:00Z] Phase 0 Init passed: state/run.json, state/summary.md initialized

@@ -1,11 +1,11 @@
 {
-  "run_id": null,
-  "status": "not_started",
-  "story_id": null,
-  "started_at": null,
+  "run_id": "run-20261031-001",
+  "status": "running",
+  "story_id": "EPMCDMETST-70442",
+  "started_at": "2026-10-31T00:00:00Z",
   "current_phase": 0,
   "phases": {
-    "0_init": "pending",
+    "0_init": "passed",
     "1_requirements": "pending",
     "2_architecture": "pending",
     "3_development": "pending",

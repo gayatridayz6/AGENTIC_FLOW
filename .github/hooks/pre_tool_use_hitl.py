@@ -19,3 +19,4 @@ if __name__ == "__main__":
         print("⚠️ HITL Gate: Approval required to create Pull Request. Please create state/.approval to proceed.")
         sys.exit(1)
     print("APPROVED")
+

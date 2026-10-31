@@ -1,93 +1,79 @@
-# AgenticAIWorkflow
+# Agentic AI Workflow — Spring Boot Capstone Pipeline
 
+An orchestrator-led, hierarchical multi-agent pipeline that takes a Jira story through the full SDLC
+(Requirements → Architecture → Development → Testing → Self-Healing → PR + HITL → Observability)
+for a Java Spring Boot codebase, with deterministic validation, audit logging, and human approval gates.
 
+## Pinned Versions (for reproducibility)
 
-## Getting started
+| Component        | Version / Model              |
+|-------------------|-------------------------------|
+| Java              | 17+                           |
+| Spring Boot       | 3.x                            |
+| Build tool        | Maven                          |
+| Test framework    | JUnit 5 + Mockito              |
+| Coverage tool     | JaCoCo                         |
+| Orchestrator model| Claude Sonnet 4.5              |
+| Dev/Arch/Heal model| Claude Sonnet 4.5             |
+| Req/Test/PR/Dashboard model | GPT-4.1               |
+| Python (scripts)  | 3.11+                          |
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+> Update this table whenever a model or tool version changes. Every run should be reproducible against
+> the versions pinned here — do not silently upgrade a model mid-project without updating this file.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-* [Create](https://docs.gitlab.com/user/project/repository/web_editor/#create-a-file) or [upload](https://docs.gitlab.com/user/project/repository/web_editor/#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+## Repository Layout
 
 ```
-cd existing_repo
-git remote add origin https://autocode.git.epam.com/gayatri_mungarwadi/agenticaiworkflow.git
-git branch -M main
-git push -uf origin main
+.github/
+  copilot-instructions.md   # global governance, security, determinism rules
+  agents/                   # orchestrator_agent.md + 1.req_agent ... 7.dashboard_agent
+  prompts/                  # *_instructions.md per phase
+  skills/                   # modular capability packages (SKILL.md each)
+  hooks/                    # pre_write_isolation.py, pre_tool_use_hitl.py, post_tool_use_audit.py
+  config/mcp.json           # MCP endpoints, ${VAR} only
+  settings.json             # deny-all-then-allow least-privilege policy
+scripts/                    # validator.py, self_heal.py, cost_monitor.py
+state/                      # run.json, summary.md, memory.json, .approval (human-created)
+workspace/artifacts/<agent>/ # isolated per-agent outputs
+logs/                       # audit.jsonl, cost.json
+eval/                       # golden_set.json, score.py (agent evaluation)
 ```
 
-## Integrate with your tools
+## How to Run
 
-* [Set up project integrations](https://autocode.git.epam.com/gayatri_mungarwadi/agenticaiworkflow/-/settings/integrations)
+1. Copy `.env.example` → `.env` and fill in `GITHUB_PAT`, `ATLASSIAN_BASIC_AUTH`. **Never commit `.env`.**
+2. Open `orchestrator_agent` as a custom agent and give it a Jira story ID or raw requirement text.
+3. It runs Phases 0–7 end-to-end in one session, pausing only at the Phase 6 HITL gate.
+4. To approve the PR gate: create an empty file at `state/.approval`, then resume the orchestrator.
 
-## Collaborate with your team
+## Replaying a Run
 
-* [Invite team members and collaborators](https://docs.gitlab.com/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/user/project/merge_requests/creating_merge_requests/)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/user/project/issues/managing_issues/#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+Every run's inputs and decisions are captured in `state/run.json` (phase statuses, artifacts, retries,
+HITL decisions) and `state/summary.md` (human-readable log). To replay or audit a past run:
 
-## Test and Deploy
+1. Keep the `story_id` and the original Jira ticket content (or raw requirement text) — this is the only
+   external input the pipeline consumes.
+2. Re-run `orchestrator_agent` with the same `story_id`; the **incremental check** (Section in
+   `orchestrator_agent.md`) will detect existing artifacts and skip already-completed phases.
+3. `logs/audit.jsonl` provides a full tool-call trace for the original run, for side-by-side comparison.
 
-Use the built-in continuous integration in GitLab.
+## Evaluating the Agent
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/topics/autodevops/requirements/)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ci/environments/protected_environments/)
+See `eval/golden_set.json` for 5 representative requirement scenarios and `eval/score.py` to run them
+against the pipeline and score artifact correctness (schema validity + grounding) deterministically.
+Run after any prompt or model change to catch regressions:
 
-***
+```
+python eval/score.py
+```
 
-# Editing this README
+## Data Policy
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+Use synthetic or masked data only. No real customer data, production credentials, or personal data may
+appear anywhere in this repository, in prompts, in `workspace/artifacts/`, or in `logs/`.
 
-## Suggestions for a good README
+## Security
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+- Secrets live only in `.env` (gitignored) and are referenced as `${VAR}` in `.github/config/mcp.json`.
+- `.github/settings.json` denies agent reads of `.env` and writes outside each agent's artifact folder.
+- See `.github/copilot-instructions.md` for the full governance model.

@@ -86,12 +86,16 @@ You do not write production code, tests, or designs yourself. Your job is **coor
 7. Report Phase 0 status, then proceed immediately to Phase 1 (no pause).
 
 ### Phase 1 — Requirements
-1. Invoke `run_subagent("1.req_agent", "<story id or raw requirement text from the user>")`.
-2. Confirm output exists at `workspace/artifacts/requirement/spec.json`.
-3. Validate: `python scripts/validator.py spec workspace/artifacts/requirement/spec.json`.
+1. Read `state/memory.json.learned_patterns` for any relevant past notes before delegating (Section 10 of `copilot-instructions.md`).
+2. Determine the input source: if the user gave a Jira story ID, that is the **primary** source — `1.req_agent` fetches it via `mcp:atlassian`. If the user supplied raw requirement text directly (no Jira ID), that is the explicit **alternate** input mode — MCP is skipped entirely, not used as a retry target. Never treat raw text as a "fallback" for a Jira ID that wasn't given; pick one source per run.
+3. Invoke `run_subagent("1.req_agent", "<story id or raw requirement text from the user>")`.
+4. Confirm output exists at `workspace/artifacts/requirement/spec.json`.
+5. Validate: `python scripts/validator.py spec workspace/artifacts/requirement/spec.json` (also checks grounding: `story_id` must be present).
    - Invalid: re-run `1.req_agent` once with the validator errors as feedback. Invalid again → `status: escalated`, stop.
-4. Isolation check: `python .github/hooks/pre_write_isolation.py requirement workspace/artifacts/requirement/spec.json`.
-5. Update `state/run.json` (`phases.1 = passed`, `artifacts.spec`), append to `state/summary.md`, run the audit hook (`post_tool_use_audit.py 1.req_agent write ok`). Extract `story_id` into `state/run.json`.
+   - If `1.req_agent` reports `status: failed, reason: mcp_unavailable` (the Jira fetch itself failed after one retry — this is distinct from the input-source decision in step 2), stop the run and report the outage to the human — do not silently substitute raw text at this point.
+6. Isolation check: `python .github/hooks/pre_write_isolation.py requirement workspace/artifacts/requirement/spec.json`.
+7. Update `state/run.json` (`phases.1 = passed`, `artifacts.spec`), append to `state/summary.md`, run the audit hook (`post_tool_use_audit.py 1.req_agent write ok`). Extract `story_id` into `state/run.json`.
+8. Run `python scripts/cost_monitor.py <input_tokens> <output_tokens> <model>` for this phase's usage (per-phase cost tracking, not just at the end). If a single subagent turn exceeds ~8K output tokens without producing `spec.json`, stop and report `status: budget_exceeded`.
 
 ### Phase 1.5 — Incremental Check (critical gate, do not skip reasoning)
 1. Search the repo (`file_search` / `grep_search`) for existing code under `workspace/artifacts/dev/` and tests under `workspace/artifacts/test/` matching `story_id`.
@@ -119,6 +123,8 @@ You do not write production code, tests, or designs yourself. Your job is **coor
    - `1` → failed, retry allowed. Increment `state/run.json.retries`. Re-invoke `5.heal_agent` (max 3 total attempts).
    - `2` → escalated. Set `status: escalated` in `state/run.json`, append summary, **stop the entire run** and report to the human — do not proceed to Phase 6.
 3. Isolation check against `self-healing`. Update state, summary, audit log.
+4. Write `5.heal_agent`'s reported flaky-test/notes digest into `state/memory.json.learned_patterns` (append, do not overwrite prior entries) — this is the only place memory.json gets new content written; subagents only report, you persist it (Section 10 of `copilot-instructions.md`).
+5. Run `python scripts/cost_monitor.py <input_tokens> <output_tokens> <model>` for this phase's usage.
 
 ### Phase 6 — PR Creation & HITL Gate (the mandatory pause point)
 1. Invoke `run_subagent("6.pr_agent", "prepare PR metadata")` to write `workspace/artifacts/pr/pr_meta.json` (does **not** create the PR yet).
