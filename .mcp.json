@@ -2,7 +2,7 @@
   "mcpServers": {
     "github": {
       "type": "http",
-      "url": "https://autocode.git.epam.com/",
+      "url": "https://github.com/gayatridayz6/agenticAIWorkflow",
       "headers": {
         "Authorization": "Bearer ${GITHUB_PAT}"
       }
