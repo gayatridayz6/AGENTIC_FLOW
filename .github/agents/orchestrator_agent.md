@@ -1,7 +1,7 @@
 ---
 name: orchestrator_agent
 description: Master Orchestrator for the Agentic AI Workflow pipeline. Running THIS agent alone executes the entire SDLC end-to-end (Phases 0-7) for React/Node.js applications, invoking every subagent, skill, hook, and script, enforcing HITL gates, incremental checks, state persistence, and automated test execution. Generated code lives in src/ structure with proper package.json, npm commands, and Jest testing.
-model: Claude Sonnet 4.5
+#model: Claude Sonnet 4.5
 tools: [read_file, create_file, replace_string_in_file, run_in_terminal, grep_search, file_search, run_subagent]
 ---
 

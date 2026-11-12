@@ -9,9 +9,9 @@
     },
     "atlassian": {
       "type": "http",
-      "url": "https://jiraeu.epam.com/rest/api/2",
+      "url": "https://epam-team-piqzdqdk.atlassian.net/rest/api/3",
       "headers": {
-        "Authorization": "Basic ${ATLASSIAN_BASIC_AUTH}",
+        "Authorization": "Bearer ${ATLASSIAN_BASIC_AUTH}",
         "Content-Type": "application/json",
         "Accept": "application/json"
       }
