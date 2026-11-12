@@ -1,6 +1,6 @@
 {
   "run_id": "run-20261109-e2e-shopping-cart",
-  "status": "paused",
+  "status": "progressing",
   "story_id": "SHOPPING-CART-ADD-BTN",
   "started_at": "2026-11-09T11:00:00Z",
   "current_phase": 6,
@@ -11,7 +11,7 @@
     "3_development": "passed",
     "4_testing": "passed",
     "5_self_healing": "passed",
-    "6_pr_hitl_gate": "paused",
+    "6_pr_hitl_gate": "passed",
     "7_observability": "pending"
   },
   "retries": 0,
@@ -21,6 +21,18 @@
       "gate": "create_pull_request",
       "approved": false,
       "reason": "Awaiting human approval via state/.approval file"
+    },
+    {
+      "ts": "2026-11-12T10:45:00Z",
+      "gate": "create_pull_request",
+      "approved": true,
+      "approval_file": "state/.approval",
+      "pr_meta_file": "workspace/artifacts/pr/pr_meta.json",
+      "action": "PR created via mcp:github",
+      "branch": "feat/SHOPPING-CART-ADD-BTN-phase6",
+      "title": "feat: Add 'Add to Cart' button on product listing page",
+      "status": "created",
+      "reason": "Human approval confirmed; PR agent proceeded with create_pull_request"
     }
   ],
   "artifacts": {
