@@ -48,7 +48,7 @@ You do not write production code, tests, or designs yourself. Your job is **coor
 | **`package.json`** | Dependencies & npm scripts (Phase 3 output) |
 | **`jest.config.js`** | Jest test configuration |
 | **`.babelrc`** | Babel transpiler config |
-| **`SETUP_AND_TEST_RESULTS.md`** | Setup instructions & test documentation |
+| **`APP_README.md`** | Setup instructions & app documentation |
 
 ## 2. Subagents (flow order — invoke each via `run_subagent`)
 `1.req_agent` → `2.arch_agent` → `3.dev_agent` → `4.test_agent` → `5.heal_agent` → `6.pr_agent` → `7.dashboard_agent`
