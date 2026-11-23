@@ -9,6 +9,19 @@ import os
 import subprocess
 import requests
 from datetime import datetime
+from pathlib import Path
+
+
+def load_env_file():
+    env_path = Path(__file__).parent.parent / ".env"
+    if not env_path.exists():
+        return
+    for line in env_path.read_text().splitlines():
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            key, value = line.split("=", 1)
+            os.environ[key.strip()] = value.strip().strip("\"'")
+
 
 def run_git_command(cmd):
     """Execute git command and return output"""
@@ -67,8 +80,8 @@ def main():
     print("=" * 60)
     print()
 
-    # Token from .mcp.json
-    GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
+    load_env_file()
+    GITHUB_TOKEN = os.environ.get("GITHUB_PAT", "")
     OWNER = "gayatridayz6"
     REPO = "agenticAIWorkflow"
 

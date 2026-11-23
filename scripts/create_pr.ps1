@@ -1,6 +1,6 @@
 #!/usr/bin/env pwsh
 # PR Creation Script for AGENTIC_FLOW Repository
-# This script creates a PR using the GitHub API with the hardcoded token
+# This script creates a PR using the GitHub API with GITHUB_PAT from .env
 
 $ErrorActionPreference = "SilentlyContinue"
 
@@ -9,8 +9,10 @@ Write-Host "GitHub PR Creation - AGENTIC_FLOW" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 
+. "$PSScriptRoot\load_env.ps1"
+
 # Configuration
-$GITHUB_TOKEN = $env:GITHUB_TOKEN
+$GITHUB_TOKEN = $env:GITHUB_PAT
 $OWNER = "gayatridayz6"
 $REPO = "AGENTIC_FLOW"
 $API_BASE = "https://api.github.com"

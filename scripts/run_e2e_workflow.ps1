@@ -3,8 +3,11 @@
 # This will push branch and create PR
 
 param(
-    [string]$token = $env:GITHUB_PAT
+    [string]$token
 )
+
+. "$PSScriptRoot\load_env.ps1"
+if (-not $token) { $token = $env:GITHUB_PAT }
 
 if (-not $token) {
     Write-Output "ERROR: GITHUB_PAT not set"

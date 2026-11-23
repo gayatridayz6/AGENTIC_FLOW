@@ -4,7 +4,7 @@
       "type": "http",
       "url": "https://api.githubcopilot.com/mcp/",
       "headers": {
-        "Authorization": "Bearer ${GITHUB_TOKEN}"
+        "Authorization": "Bearer ${GITHUB_PAT}"
       }
     },
 
@@ -12,7 +12,7 @@
       "type": "http",
       "url": "https://epam-team-piqzdqdk.atlassian.net/rest/api/3",
       "headers": {
-        "Authorization": "Bearer ATATT3xFfGF0tdLq6d5qr0yPvFr2LxVn154k_Tbh2VH34L_-Pprx5EYFSkK8RYsRDX4gyLdCeO3UaVIKpdlWRvAuEq-cLDJQOaZ_ZZtEdRT4nlTUVIrj8OBbp6njf4fGBcUpEIAeFEKIuWq-IMspuniRZgQwQq4GjpaiDWTQ8e9mOFvY6ejv1Hk=43AB1EF4",
+        "Authorization": "Basic ${ATLASSIAN_BASIC_AUTH}",
         "Content-Type": "application/json",
         "Accept": "application/json"
       }
