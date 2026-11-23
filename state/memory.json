@@ -1,0 +1,9 @@
+{
+ "learned_patterns": [
+  {
+   "story": "CCP-1",
+   "flaky_tests": [],
+   "last_run_notes": "Jest collected archived test copies under workspace/ and hit a haste-map package.json collision; keep jest roots=src and ignore workspace/ and coverage/."
+  }
+ ]
+}

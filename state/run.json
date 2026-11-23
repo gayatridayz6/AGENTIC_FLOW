@@ -1,0 +1,42 @@
+{
+ "run_id": "run-20261123T124911Z",
+ "started_at": "2026-11-23T12:49:11Z",
+ "story_id": "CCP-1",
+ "status": "completed",
+ "phases": {
+  "0": "passed",
+  "1": "passed",
+  "2": "passed",
+  "3": "passed",
+  "4": "passed",
+  "5": "passed",
+  "6": "passed",
+  "7": "passed"
+ },
+ "retries": 1,
+ "hitl": [
+  {
+   "ts": "2026-11-23T13:22:04.717809+00:00",
+   "gate": "create_pull_request",
+   "approved": false
+  },
+  {
+   "ts": "2026-11-23T13:25:28.667023+00:00",
+   "gate": "create_pull_request",
+   "approved": true
+  }
+ ],
+ "artifacts": {
+  "spec": "workspace/artifacts/requirement/spec.json",
+  "design": "workspace/artifacts/architecture/design.json",
+  "dev": "workspace/artifacts/dev/",
+  "live_src": "src/",
+  "test": "workspace/artifacts/test/",
+  "coverage": "workspace/artifacts/self-healing/coverage.json",
+  "pr_meta": "workspace/artifacts/pr/pr_meta.json",
+  "pr_url": "https://github.com/gayatridayz6/AGENTIC_FLOW/pull/3",
+  "branch": "feature/CCP-1-add-to-cart-button-on-product-listing-page",
+  "dashboard": "workspace/artifacts/dashboard/dashboard.html"
+ },
+ "finished_at": "2026-11-23T13:38:57.321831+00:00"
+}
