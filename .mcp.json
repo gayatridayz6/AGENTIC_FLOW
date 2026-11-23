@@ -1,0 +1,23 @@
+{
+  "mcpServers": {
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_PAT}"
+      }
+    },
+
+    "atlassian": {
+      "type": "http",
+      "url": "https://epam-team-piqzdqdk.atlassian.net/rest/api/3",
+      "headers": {
+        "Authorization": "Basic ${ATLASSIAN_BASIC_AUTH}",
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      }
+    }
+  },
+  "_security_note": "All sensitive tokens must be loaded from .env file or environment variables only. NEVER commit actual tokens to version control.",
+  "_jira_api_note": "Use /rest/api/3/issues/{key} endpoint for fetching story details. For browsing, use /projects/{project}/issues/{key} path in UI."
+}
