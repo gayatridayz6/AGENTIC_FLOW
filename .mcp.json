@@ -2,16 +2,17 @@
   "mcpServers": {
     "github": {
       "type": "http",
-      "url": "https://github.com/gayatridayz6/agenticAIWorkflow",
+      "url": "https://api.githubcopilot.com/mcp/",
       "headers": {
-        "Authorization": "Bearer ${GITHUB_PAT}"
+        "Authorization": "Bearer ${GITHUB_TOKEN}"
       }
     },
+
     "atlassian": {
       "type": "http",
       "url": "https://epam-team-piqzdqdk.atlassian.net/rest/api/3",
       "headers": {
-        "Authorization": "Bearer ${ATLASSIAN_BASIC_AUTH}",
+        "Authorization": "Bearer ATATT3xFfGF0tdLq6d5qr0yPvFr2LxVn154k_Tbh2VH34L_-Pprx5EYFSkK8RYsRDX4gyLdCeO3UaVIKpdlWRvAuEq-cLDJQOaZ_ZZtEdRT4nlTUVIrj8OBbp6njf4fGBcUpEIAeFEKIuWq-IMspuniRZgQwQq4GjpaiDWTQ8e9mOFvY6ejv1Hk=43AB1EF4",
         "Content-Type": "application/json",
         "Accept": "application/json"
       }
