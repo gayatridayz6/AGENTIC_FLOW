@@ -1,0 +1,110 @@
+{
+  "story_id": "SHOPPING-CART-ADD-BTN",
+  "title": "Add 'Add to Cart' Button on Product Listing Page",
+  "epic": "Shopping Cart & Checkout",
+  "type": "Story",
+  "priority": "High",
+  "assignee": "Frontend Developer",
+  "created_at": "2026-11-09T11:00:00Z",
+  "version": "1.0",
+  "source": "Direct input - Shopping cart feature implementation",
+
+  "user_story": {
+    "role": "customer browsing the e-commerce website",
+    "action": "click an 'Add to Cart' button directly on the product listing page",
+    "benefit": "add items to shopping cart quickly without needing to open each product's details page"
+  },
+
+  "acceptance_criteria": [
+    {
+      "id": "AC-1",
+      "title": "Button Visibility",
+      "description": "An 'Add to Cart' button must be displayed on every product card in the product listing/catalog view.",
+      "testable": true
+    },
+    {
+      "id": "AC-2",
+      "title": "Action & Feedback - Item Added",
+      "description": "When clicked, the item is successfully added to the user's shopping cart.",
+      "details": "Visual indicator (e.g., toast notification 'Item added to cart!' or button state change to 'Added ✓') shown to user"
+    },
+    {
+      "id": "AC-3",
+      "title": "Real-time Cart Counter Update",
+      "description": "The cart icon counter in the website header updates dynamically in real-time to reflect the new item count.",
+      "testable": true
+    },
+    {
+      "id": "AC-4",
+      "title": "Inventory Handling",
+      "description": "If a product is out of stock, the button should be disabled and labeled as 'Out of Stock'.",
+      "testable": true
+    },
+    {
+      "id": "AC-5",
+      "title": "Guest Users - Local Storage",
+      "description": "For guest users, cart items must be stored in local storage/session storage.",
+      "technical": true
+    },
+    {
+      "id": "AC-6",
+      "title": "Logged-in Users - Backend Sync",
+      "description": "For logged-in users, cart items must sync with the backend database.",
+      "technical": true
+    }
+  ],
+
+  "technical_requirements": {
+    "api_endpoint": "/api/cart/add",
+    "integration": "Must integrate with existing cart API endpoint",
+    "database_sync": "Backend synchronization for authenticated users",
+    "storage_options": "LocalStorage/SessionStorage for guests, Database for logged-in users"
+  },
+
+  "definition_of_done": [
+    "API endpoint /api/cart/add integrated and tested",
+    "Unit tests written for UI component states (In stock, Out of stock, Success state)",
+    "Toast notification component implemented and tested",
+    "Cart counter header component updates dynamically",
+    "Local storage implementation for guest users",
+    "Backend database sync for logged-in users",
+    "Tested on desktop and mobile responsive views",
+    "Code review passed",
+    "Documentation updated"
+  ],
+
+  "technical_complexity": "Medium",
+  "business_value": "Improves user experience by reducing friction in the shopping workflow. Enables quick cart additions without page navigation.",
+  "scope": {
+    "in_scope": [
+      "Add to Cart button UI component",
+      "Toast notification system",
+      "Cart counter header update",
+      "Guest user local storage implementation",
+      "Logged-in user database sync",
+      "Out of stock button state"
+    ],
+    "out_of_scope": [
+      "Shopping cart page redesign",
+      "Checkout process modifications",
+      "Payment processing",
+      "Inventory management system"
+    ]
+  },
+
+  "dependencies": [
+    "Existing /api/cart/add endpoint must be available",
+    "Product listing page component infrastructure",
+    "Cart management state system",
+    "User authentication system",
+    "LocalStorage/SessionStorage support"
+  ],
+
+  "estimate": {
+    "story_points": 8,
+    "complexity": "Medium",
+    "effort_days": 3
+  },
+
+  "status": "ready_for_architecture"
+}

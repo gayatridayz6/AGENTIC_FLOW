@@ -1,0 +1,253 @@
+{
+  "design_id": "ARCH-SHOPPING-CART-ADD-BTN-v1",
+  "story_id": "SHOPPING-CART-ADD-BTN",
+  "title": "Architecture: Add to Cart Button on Product Listing",
+  "created_at": "2026-11-09T11:05:00Z",
+  "version": "1.0",
+  "status": "ready_for_development",
+
+  "system_architecture": {
+    "components": [
+      {
+        "id": "UI-ProductCard",
+        "name": "Product Card Component",
+        "type": "React Component",
+        "responsibility": "Display product card with title, image, price, and Add to Cart button",
+        "location": "src/components/ProductCard.jsx",
+        "props": ["product", "onAddToCart"],
+        "state": ["isLoading", "isOutOfStock"]
+      },
+      {
+        "id": "UI-AddToCartBtn",
+        "name": "Add to Cart Button",
+        "type": "React Component",
+        "responsibility": "Render button with state handling (enabled/disabled, loading, success)",
+        "location": "src/components/AddToCartButton.jsx",
+        "states": ["default", "loading", "success", "outOfStock"],
+        "events": ["onClick", "onSuccess", "onError"]
+      },
+      {
+        "id": "UI-ToastNotification",
+        "name": "Toast Notification",
+        "type": "React Component",
+        "responsibility": "Display feedback message after item added to cart",
+        "location": "src/components/Toast.jsx",
+        "variants": ["success", "error", "info"]
+      },
+      {
+        "id": "UI-CartCounter",
+        "name": "Cart Counter Header",
+        "type": "React Component",
+        "responsibility": "Display cart item count in header, update in real-time",
+        "location": "src/components/CartCounter.jsx",
+        "updates": "via Redux/Context API on cart change"
+      },
+      {
+        "id": "API-CartService",
+        "name": "Cart API Service",
+        "type": "Service Layer",
+        "responsibility": "Handle API calls to /api/cart/add endpoint",
+        "location": "src/services/CartService.js",
+        "methods": ["addToCart(productId, quantity)"]
+      },
+      {
+        "id": "STATE-CartManager",
+        "name": "Cart State Manager",
+        "type": "Redux Store / Context",
+        "responsibility": "Manage global cart state, handle guest vs authenticated users",
+        "location": "src/store/cartSlice.js or src/context/CartContext.js",
+        "stores": ["items[]", "itemCount", "userId"]
+      },
+      {
+        "id": "STORAGE-LocalStorage",
+        "name": "Local Storage Manager",
+        "type": "Utility",
+        "responsibility": "Persist cart for guest users in browser storage",
+        "location": "src/utils/StorageManager.js",
+        "methods": ["saveCart(cartData)", "loadCart()"]
+      }
+    ]
+  },
+
+  "data_flow": {
+    "flow_1_add_to_cart": {
+      "name": "User clicks Add to Cart",
+      "steps": [
+        "1. User clicks Add to Cart button on product card",
+        "2. Button shows loading state",
+        "3. CartService.addToCart(productId) called via API",
+        "4a. If guest user: Store item in LocalStorage",
+        "4b. If logged-in user: Send to backend /api/cart/add, save in database",
+        "5. On success: Update CartManager state (increment itemCount)",
+        "6. CartCounter component subscribes to state change, updates header count",
+        "7. Toast notification displays 'Item added to cart!'",
+        "8. Button state changes to 'Added ✓' for 2 seconds, then reverts"
+      ]
+    },
+    "flow_2_out_of_stock": {
+      "name": "Product is out of stock",
+      "steps": [
+        "1. Product card receives inventory status from API/props",
+        "2. isOutOfStock flag set to true",
+        "3. Add to Cart button disabled and text changes to 'Out of Stock'",
+        "4. Button styling changes (grayed out, cursor: not-allowed)"
+      ]
+    },
+    "flow_3_cart_sync": {
+      "name": "Logged-in user cart sync",
+      "steps": [
+        "1. On app load, check if user is authenticated",
+        "2. Fetch cart from backend GET /api/cart",
+        "3. Populate CartManager with fetched items",
+        "4. CartCounter updates with correct itemCount"
+      ]
+    }
+  },
+
+  "technical_stack": {
+    "frontend": {
+      "framework": "React 18+",
+      "state_management": "Redux Toolkit or Context API",
+      "styling": "CSS Modules / Tailwind CSS",
+      "notifications": "React Toastify or custom Toast component",
+      "http_client": "Axios or Fetch API"
+    },
+    "backend": {
+      "endpoint": "POST /api/cart/add",
+      "payload": {
+        "productId": "string",
+        "quantity": "number",
+        "userId": "string (optional for guests)"
+      },
+      "response": {
+        "success": "boolean",
+        "message": "string",
+        "cartItem": "object",
+        "itemCount": "number"
+      }
+    },
+    "storage": {
+      "guest_users": "browser LocalStorage / SessionStorage",
+      "logged_in_users": "backend database (SQL/NoSQL)"
+    }
+  },
+
+  "api_contracts": [
+    {
+      "method": "POST",
+      "endpoint": "/api/cart/add",
+      "description": "Add product to cart",
+      "request": {
+        "body": {
+          "productId": "string (required)",
+          "quantity": "number (default: 1)",
+          "userId": "string (optional)"
+        },
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer token (if authenticated)"
+        }
+      },
+      "response_success": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "message": "Item added to cart",
+          "cartItem": {
+            "productId": "string",
+            "quantity": "number",
+            "price": "number"
+          },
+          "itemCount": "number"
+        }
+      },
+      "response_error": {
+        "status": 400,
+        "body": {
+          "success": false,
+          "message": "Product out of stock or invalid"
+        }
+      }
+    }
+  ],
+
+  "sequence_diagram": {
+    "actor": "User",
+    "participants": ["ProductCard", "AddToCartButton", "CartService", "CartAPI", "CartManager", "CartCounter", "Toast"],
+    "interactions": [
+      "User -> AddToCartButton: click()",
+      "AddToCartButton -> AddToCartButton: setState(loading=true)",
+      "AddToCartButton -> CartService: addToCart(productId)",
+      "CartService -> CartAPI: POST /api/cart/add",
+      "CartAPI -> CartAPI: validate & save",
+      "CartAPI -> CartService: {success, itemCount}",
+      "CartService -> CartManager: updateCart(itemCount)",
+      "CartManager -> CartCounter: notify state change",
+      "CartCounter -> CartCounter: update display",
+      "CartManager -> Toast: show('Item added!')",
+      "AddToCartButton -> AddToCartButton: setState(success=true, disabled)"
+    ]
+  },
+
+  "error_handling": [
+    {
+      "scenario": "Network error during cart add",
+      "handling": "Catch API error, show toast 'Failed to add item', button reverts to default state, retry option"
+    },
+    {
+      "scenario": "Product out of stock (checked server-side)",
+      "handling": "API returns 400, show toast 'Product out of stock', button remains disabled"
+    },
+    {
+      "scenario": "User not authenticated (for logged-in flow)",
+      "handling": "Redirect to login page, or fall back to guest local storage"
+    },
+    {
+      "scenario": "LocalStorage quota exceeded (guest users)",
+      "handling": "Show warning toast, clear old cart items if possible, or prompt to login"
+    }
+  ],
+
+  "responsive_design": {
+    "desktop": "Button inline on product card, standard toast at bottom right",
+    "tablet": "Button inline, toast at bottom center",
+    "mobile": "Button full-width or compact, toast at top of screen for better visibility"
+  },
+
+  "accessibility": [
+    "Button has aria-label: 'Add product to cart'",
+    "Button has aria-disabled when out of stock",
+    "Toast is announced via aria-live region",
+    "Keyboard navigation: Tab to button, Enter/Space to activate",
+    "Color not sole indicator: use text + icon changes"
+  ],
+
+  "testing_strategy": {
+    "unit_tests": [
+      "AddToCartButton renders with correct initial state",
+      "AddToCartButton disabled when product out of stock",
+      "CartService.addToCart makes correct API call",
+      "CartManager updates itemCount correctly",
+      "Toast displays success message on item added"
+    ],
+    "integration_tests": [
+      "Full flow: click button -> API call -> state update -> header counter updates -> toast shows",
+      "Guest user: cart saved to LocalStorage after add",
+      "Logged-in user: cart synced with backend after add"
+    ],
+    "e2e_tests": [
+      "User adds item to cart from product listing",
+      "Cart counter in header updates",
+      "Toast notification appears",
+      "Multiple items added correctly",
+      "Out of stock button disabled"
+    ]
+  },
+
+  "security_considerations": [
+    "Validate productId and quantity on server",
+    "Ensure user can only add to their own cart (auth check)",
+    "Rate limit /api/cart/add to prevent abuse",
+    "Sanitize any user input before storing in localStorage"
+  ]
+}
