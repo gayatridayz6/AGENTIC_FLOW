@@ -1,0 +1,39 @@
+{
+  "description": "Least-privilege deny rules for the capstone pipeline. Enforced at the IDE/runtime level alongside the Python hooks in .github/hooks/.",
+  "deny": [
+    {
+      "rule": "no-read-env",
+      "pattern": ".env",
+      "reason": "Secrets must never be read into model context. Use ${VAR} references only.",
+      "applies_to": "all_agents"
+    },
+    {
+      "rule": "no-read-approval-bypass",
+      "pattern": "state/.approval",
+      "reason": "Agents must never create or modify this file; only a human reviewer may.",
+      "applies_to": "all_agents",
+      "write_denied": true,
+      "read_allowed": true
+    },
+    {
+      "rule": "no-write-outside-artifacts",
+      "pattern": "workspace/artifacts/**",
+      "reason": "Each agent writes only inside its own workspace/artifacts/<agent>/ folder (see pre_write_isolation.py).",
+      "applies_to": "subagents",
+      "scope": "per_agent_folder_only"
+    },
+    {
+      "rule": "no-write-state-except-orchestrator",
+      "pattern": "state/**",
+      "reason": "Only the orchestrator writes to state/run.json, summary.md, memory.json.",
+      "applies_to": "subagents",
+      "write_denied": true
+    }
+  ],
+  "allow": [
+    { "rule": "read-config-with-var-refs", "pattern": ".github/config/mcp.json" },
+    { "rule": "read-own-artifacts", "pattern": "workspace/artifacts/<self>/**" },
+    { "rule": "read-shared-instructions", "pattern": ".github/prompts/**, .github/skills/**, .github/copilot-instructions.md" }
+  ],
+  "default_policy": "deny-all-then-allow-listed"
+}
