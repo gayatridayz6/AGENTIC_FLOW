@@ -1,0 +1,18 @@
+PASS src/__tests__/cartService.test.js
+PASS src/__tests__/authSlice.test.js
+PASS src/__tests__/validators.test.js
+PASS src/__tests__/store.test.js
+PASS src/__tests__/cartStorage.test.js
+PASS src/__tests__/cartSlice.test.js
+PASS src/__tests__/Header.test.jsx (5.2 s)
+PASS src/__tests__/responsive.test.jsx (5.529 s)
+PASS src/__tests__/ProductList.test.jsx (5.528 s)
+PASS src/__tests__/App.test.jsx (6.117 s)
+PASS src/__tests__/AddToCartButton.test.jsx (6.503 s)
+
+Test Suites: 11 passed, 11 total
+Tests:       268 passed, 268 total
+Snapshots:   0 total
+Time:        9.723 s, estimated 28 s
+Ran all test suites.
+Test results written to: workspace\artifacts\orchestrator\jest_results.json

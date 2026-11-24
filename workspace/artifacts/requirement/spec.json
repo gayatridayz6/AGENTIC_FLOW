@@ -1,0 +1,28 @@
+{
+  "story_id": "CCP-1",
+  "title": "Add \"Add to Cart\" Button on Product Listing Page",
+  "epic": "Shopping Cart & Checkout",
+  "priority": "Medium",
+  "acceptance_criteria": [
+    "Button Visibility: Given the product listing/catalog view, When it is displayed, Then an \"Add to Cart\" button is displayed on every product card.",
+    "Action: Given a product with an \"Add to Cart\" button, When the customer clicks it, Then the item is successfully added to the user's shopping cart.",
+    "Feedback: Given the customer has clicked \"Add to Cart\", When the item is added, Then a visual indicator is shown to the user (e.g., a toast notification like \"Item added to cart!\" or a quick button state change to \"Added ✓\").",
+    "Cart Counter: Given the customer has added an item to the cart, When the add completes, Then the cart icon counter in the website header updates dynamically in real-time to reflect the new item count.",
+    "Inventory Handling: Given a product is out of stock, When it is displayed on the product listing, Then the button is disabled and labeled \"Out of Stock\".",
+    "Guest Users: Given a guest user adds an item to the cart, When the item is added, Then the cart items are stored in local storage/session.",
+    "Logged-in Users: Given a logged-in user adds an item to the cart, When the item is added, Then the cart items sync with the backend database.",
+    "Technical Note / DoD: API endpoint /api/cart/add must be integrated.",
+    "Technical Note / DoD: Unit tests are written and passed for UI component states (In stock, Out of stock, Success state).",
+    "Technical Note / DoD: Tested on desktop and mobile responsive views."
+  ],
+  "source_url": "https://epam-team-piqzdqdk.atlassian.net/browse/CCP-1",
+  "open_questions": [
+    "Epic: the Jira issue has no parent/epic link; the value \"Shopping Cart & Checkout\" is taken from the 'Epic:' line in the ticket description text.",
+    "Priority discrepancy: the Jira priority field is \"Medium\" (used here), but the description text states \"Priority: High\". Which is authoritative?",
+    "Issue type discrepancy: the Jira issuetype is \"Epic\", but the description says \"Issue Type: Story\". Should this be treated as a Story?",
+    "The /api/cart/add API contract is unspecified: HTTP method, request/response payload, and authentication are not stated in the ticket.",
+    "How a user is determined to be logged-in vs guest (session, token, etc.) is unspecified.",
+    "Toast/feedback wording (\"Item added to cart!\", \"Added ✓\") is given only as an example (e.g.); the exact wording and which feedback mechanism to use are not fixed.",
+    "Jira assignee field is empty, although the description lists the assignee as \"Frontend Developer\"."
+  ]
+}

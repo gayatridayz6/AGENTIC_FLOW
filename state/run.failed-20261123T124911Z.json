@@ -1,0 +1,23 @@
+{
+ "run_id": "run-20261123T124051Z",
+ "started_at": "2026-11-23T12:40:51Z",
+ "story_id": "CCP-1",
+ "status": "failed",
+ "phases": {
+  "0": "passed",
+  "1": "failed",
+  "2": "pending",
+  "3": "pending",
+  "4": "pending",
+  "5": "pending",
+  "6": "pending",
+  "7": "pending"
+ },
+ "retries": 0,
+ "hitl": [],
+ "artifacts": {
+  "spec": "workspace/artifacts/requirement/spec.json"
+ },
+ "finished_at": "2026-11-23T12:44:15.034040Z",
+ "failure_reason": "jira_issue_not_found: CCP-1 (project CCP not visible to authenticated user)"
+}
