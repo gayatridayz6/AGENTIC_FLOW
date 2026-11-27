@@ -1,0 +1,125 @@
+{
+  "story_id": "CCP-1",
+  "title": "Add \"Add to Cart\" Button on Product Listing Page",
+  "stack": {
+    "frontend": "React 18 + Redux Toolkit + react-redux + react-toastify + axios",
+    "testing": "Jest + @testing-library/react (setupFilesAfterEnv: src/setupTests.js)",
+    "note": "Backend POST /api/cart/add is an EXTERNAL, pre-existing endpoint; no backend service is designed here (overrides the Spring Boot wording in the generic arch docs)."
+  },
+  "components": [
+    {"name": "index", "layer": "component", "file": "src/index.jsx", "responsibility": "Entry point: mounts React root, wraps App in Redux Provider, imports react-toastify CSS."},
+    {"name": "App", "layer": "component", "file": "src/App.jsx", "responsibility": "Composes Header, ProductList and ToastContainer; hydrates guest cart on mount."},
+    {"name": "Header", "layer": "component", "file": "src/components/Header.jsx", "responsibility": "Site header containing the CartIcon."},
+    {"name": "CartIcon", "layer": "component", "file": "src/components/CartIcon.jsx", "responsibility": "Shows cart icon with live item-count badge from selectCartCount; aria-live polite so count updates are announced (AC4)."},
+    {"name": "ProductList", "layer": "component", "file": "src/components/ProductList.jsx", "responsibility": "Responsive CSS-grid listing (1 col mobile, 2 tablet, 3-4 desktop); renders a ProductCard per product."},
+    {"name": "ProductCard", "layer": "component", "file": "src/components/ProductCard.jsx", "responsibility": "Renders product name/price/image via React text nodes (no dangerouslySetInnerHTML) and an AddToCartButton on every card (AC1)."},
+    {"name": "AddToCartButton", "layer": "component", "file": "src/components/AddToCartButton.jsx", "responsibility": "Stateful button: idle/in-stock, adding, added, out-of-stock (disabled), error; dispatches addToCart thunk; fires toast on success/failure; disabled while in flight to prevent double submit."},
+    {"name": "productsData", "layer": "util", "file": "src/data/products.js", "responsibility": "Static sample product catalogue (id, name, price, imageUrl, inStock) used by ProductList until a catalogue API is supplied."},
+    {"name": "store", "layer": "store", "file": "src/store/index.js", "responsibility": "configureStore with cart and auth reducers; devTools disabled in production."},
+    {"name": "cartSlice", "layer": "store", "file": "src/store/cartSlice.js", "responsibility": "State {items, count, statusByProduct, error}; addToCart async thunk (guest -> cartStorage, authenticated -> cartService); hydrateGuestCart reducer; selectors selectCartCount, selectAddStatus(productId)."},
+    {"name": "authSlice", "layer": "store", "file": "src/store/authSlice.js", "responsibility": "Holds isAuthenticated boolean (assumed contract; default false). Token/session handled outside cart code."},
+    {"name": "cartService", "layer": "service", "file": "src/services/cartService.js", "responsibility": "axios instance (baseURL from process.env.REACT_APP_API_BASE_URL, withCredentials, timeout); addItem(productId, quantity) -> POST /api/cart/add; maps errors to safe user messages."},
+    {"name": "cartStorage", "layer": "service", "file": "src/services/cartStorage.js", "responsibility": "Guest cart persistence in localStorage key guest_cart with schema validation and try/catch around JSON.parse/setItem; falls back to empty cart on corrupt data."},
+    {"name": "validators", "layer": "util", "file": "src/utils/validators.js", "responsibility": "isValidProductId (/^[A-Za-z0-9_-]{1,64}$/), isValidQuantity (integer 1..99), validateCartSchema."},
+    {"name": "setupTests", "layer": "util", "file": "src/setupTests.js", "responsibility": "Imports @testing-library/jest-dom; resets localStorage between tests."},
+    {"name": "tests", "layer": "util", "file": "src/__tests__/AddToCartButton.test.jsx", "responsibility": "Unit tests for button states: in stock, out of stock, adding, success (Added), error (AC9)."}
+  ],
+  "endpoints": [
+    {
+      "method": "POST",
+      "path": "/api/cart/add",
+      "external": true,
+      "consumed_by": "src/services/cartService.js",
+      "access_rule": "Authenticated users only (session cookie or bearer token managed by auth layer). Guests never call it; guest adds stay in localStorage.",
+      "covers_ac": [2, 3, 4, 7, 8],
+      "request": {"productId": "string|number, validated", "quantity": "integer 1..99, default 1"},
+      "responses": {
+        "200": "{ items: [...], count: number } updated cart; UI updates counter and shows success feedback",
+        "400": "Invalid productId/quantity; UI shows generic 'Could not add item' error state",
+        "401": "Session expired; UI prompts login",
+        "409": "Out of stock / insufficient inventory; button becomes 'Out of Stock'",
+        "5xx": "Server error; button error state with retry, generic message, no stack trace"
+      }
+    }
+  ],
+  "ac_mapping": {
+    "1": {"components": ["ProductList", "ProductCard", "AddToCartButton"], "note": "Button rendered on every product card."},
+    "2": {"components": ["AddToCartButton", "cartSlice", "cartService", "cartStorage"], "endpoint": "POST /api/cart/add", "note": "Click dispatches addToCart thunk."},
+    "3": {"components": ["AddToCartButton"], "note": "Button state 'Added ✓' for ~2s plus react-toastify toast 'Item added to cart!'. Wording assumed (open question)."},
+    "4": {"components": ["CartIcon", "cartSlice", "Header"], "endpoint": "POST /api/cart/add", "note": "Count derived from Redux state; updates on fulfilled thunk."},
+    "5": {"components": ["AddToCartButton", "ProductCard", "productsData"], "note": "inStock=false -> disabled button labelled 'Out of Stock', no dispatch."},
+    "6": {"components": ["cartStorage", "cartSlice", "authSlice"], "note": "isAuthenticated=false -> items persisted to localStorage guest_cart."},
+    "7": {"components": ["cartService", "cartSlice", "authSlice"], "endpoint": "POST /api/cart/add", "note": "isAuthenticated=true -> backend sync via cartService."},
+    "8": {"components": ["cartService"], "endpoint": "POST /api/cart/add", "note": "Integration of /api/cart/add via axios service."},
+    "9": {"components": ["tests"], "note": "Jest + Testing Library tests for in-stock, out-of-stock, success states."},
+    "10": {"components": ["ProductList", "Header", "CartIcon"], "note": "Responsive CSS (mobile-first media queries, min touch target 44px); verified with viewport tests and manual desktop/mobile check."}
+  },
+  "button_states": {
+    "idle_in_stock": "Label 'Add to Cart', enabled.",
+    "adding": "Label 'Adding...', disabled, aria-busy=true.",
+    "added": "Label 'Added ✓', disabled briefly (~2s) then reverts to idle; toast 'Item added to cart!'.",
+    "out_of_stock": "Label 'Out of Stock', disabled, aria-disabled=true, no dispatch on click.",
+    "error": "Label 'Try again', enabled; toast with generic 'Could not add item. Please try again.'."
+  },
+  "responsive_approach": "Mobile-first CSS in src/styles.css: product grid via CSS grid (1 col <600px, 2 cols 600-900px, 3-4 cols >900px); header collapses spacing on mobile; buttons full-width on cards with min height 44px; toast container top-center on mobile, top-right on desktop; viewport meta tag in public/index.html.",
+  "auth_determination": "Assumption: an auth slice exposes isAuthenticated (boolean, default false) set by the host app's login flow. Cart code reads it only via selector and never stores or reads tokens itself.",
+  "assumptions": [
+    "Stack override: frontend-only React/Redux Toolkit design; backend is external.",
+    "POST /api/cart/add request body {productId, quantity}; success returns 200 with {items, count}; errors 400/401/409/5xx as listed. Auth via httpOnly session cookie (withCredentials) or bearer token injected by a host-app interceptor.",
+    "Logged-in vs guest determined by auth.isAuthenticated (spec open question left it unspecified).",
+    "Toast wording 'Item added to cart!' and button 'Added ✓' used together (spec gives them as examples).",
+    "Product catalogue comes from a static sample file until a catalogue API is specified; each product has an inStock boolean.",
+    "Epic/priority/issue-type discrepancies in spec open_questions do not affect design.",
+    "state/memory.json is empty; no learned patterns applied."
+  ],
+  "security_controls": [
+    "XSS-safe rendering: all product data rendered as React text nodes; dangerouslySetInnerHTML is forbidden; image URLs restricted to http(s) scheme.",
+    "Input validation: productId must match /^[A-Za-z0-9_-]{1,64}$/ and quantity must be an integer 1..99 (utils/validators.js) before any storage write or API call; invalid input rejected without request.",
+    "No secrets in code: no API keys, tokens or passwords committed; configuration only via environment.",
+    "API base URL read from process.env.REACT_APP_API_BASE_URL (no hardcoded host); only non-secret values may use the REACT_APP_ prefix since they are bundled into client JS.",
+    "Guest cart stored in localStorage key guest_cart with schema validation on read (array of {productId, quantity} with validated fields, max 100 entries) and try/catch around JSON.parse/setItem/quota errors; corrupt data is discarded.",
+    "Auth token handling: cart code never reads, writes or persists auth tokens in localStorage/sessionStorage; prefer httpOnly secure cookie session; any token is injected in memory by a host-app axios interceptor.",
+    "No PII in logs: no console logging of cart contents, user ids, tokens or response bodies; errors logged by category only.",
+    "No stack traces or internal details shown to the user: errors mapped to generic messages; raw server messages never rendered.",
+    "CSRF/credentials: axios withCredentials=true only to the configured allowed origin; rely on SameSite cookies and a server-side CSRF token header (X-CSRF-Token) if the backend requires it; CORS allow-list is a backend responsibility.",
+    "Request hardening: axios timeout (10s), button disabled while request in flight to prevent duplicate submission, HTTPS-only base URL enforced in production.",
+    "Dependency hygiene: lockfile-pinned versions and npm audit in CI.",
+    "AuthZ: endpoint called only when isAuthenticated is true; server remains the authority for authN/authZ and inventory checks, client state is not trusted."
+  ],
+  "threats": [
+    {"threat": "A03 Injection / XSS via product name or description rendered in cards", "mitigation": "React escaping, no dangerouslySetInnerHTML, URL scheme allow-list for images, CSP header recommended on hosting."},
+    {"threat": "A03 Injection via tampered productId/quantity (DOM edit or crafted guest cart)", "mitigation": "Client-side validators plus schema validation on localStorage reads; server must revalidate (documented assumption)."},
+    {"threat": "A02 Sensitive data exposure: tokens or PII persisted in localStorage", "mitigation": "Cart storage holds only productId and quantity; auth tokens never stored by cart code; httpOnly cookies preferred."},
+    {"threat": "A05 Security misconfiguration: secrets or API host hardcoded in bundle", "mitigation": "REACT_APP_API_BASE_URL via environment only; .env not committed; no secrets in REACT_APP_ vars."},
+    {"threat": "A01 Broken access control: manipulated isAuthenticated flag to sync another user's cart", "mitigation": "Backend derives user from session/token, never from client-supplied user id; request body contains only productId and quantity."},
+    {"threat": "A04 Insecure design: price or stock manipulation from client", "mitigation": "Client sends only productId/quantity; server computes price and checks inventory (409 handled in UI)."},
+    {"threat": "A09 Logging failures / information leakage via console or error messages", "mitigation": "No PII logging; generic user-facing error messages; no stack traces rendered."},
+    {"threat": "CSRF on cookie-authenticated POST /api/cart/add", "mitigation": "SameSite cookies, CSRF token header when required by backend, CORS origin allow-list server-side."},
+    {"threat": "A06 Vulnerable and outdated npm dependencies", "mitigation": "Lockfile, npm audit in CI, minimal dependency set."},
+    {"threat": "Abuse via rapid repeated add clicks (DoS / duplicate adds)", "mitigation": "Button disabled while adding, axios timeout, server-side rate limiting."},
+    {"threat": "Corrupt or oversized localStorage guest cart crashing the app", "mitigation": "try/catch on parse, schema validation, max 100 entries, fallback to empty cart."}
+  ],
+  "file_plan": [
+    "public/index.html",
+    ".babelrc",
+    "src/index.jsx",
+    "src/App.jsx",
+    "src/setupTests.js",
+    "src/styles.css",
+    "src/data/products.js",
+    "src/components/Header.jsx",
+    "src/components/CartIcon.jsx",
+    "src/components/ProductList.jsx",
+    "src/components/ProductCard.jsx",
+    "src/components/AddToCartButton.jsx",
+    "src/store/index.js",
+    "src/store/cartSlice.js",
+    "src/store/authSlice.js",
+    "src/services/cartService.js",
+    "src/services/cartStorage.js",
+    "src/utils/validators.js",
+    "src/__tests__/AddToCartButton.test.jsx",
+    "src/__tests__/cartSlice.test.js",
+    "src/__tests__/cartStorage.test.js"
+  ]
+}
