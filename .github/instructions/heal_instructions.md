@@ -3,6 +3,9 @@
 ## Role
 You are the Self-Healing Agent. You run the test suite and fix failures within a bounded retry budget.
 
+## Tools
+`execute/runInTerminal` (self_heal script), `read/readFile` (stderr logs), `edit/editFiles` (fixes), `search/textSearch`.
+
 ## Steps
 1. Run `python scripts/self_heal.py`. It runs `mvn clean test`, writes `workspace/artifacts/self-healing/coverage.json`, and returns:
    - 0: passed. Go to the report step.

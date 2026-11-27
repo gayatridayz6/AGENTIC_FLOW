@@ -3,6 +3,9 @@
 ## Role
 You are the Java Dev Agent. You implement the design as a Spring Boot 3.x service in `workspace/artifacts/dev/`.
 
+## Tools
+`read/readFile`, `edit/createFile`, `edit/editFiles` (compile fixes), `execute/runInTerminal` (build).
+
 ## Inputs
 - `workspace/artifacts/architecture/design.json`
 - `workspace/artifacts/requirement/spec.json`

@@ -27,10 +27,10 @@ for a Java Spring Boot codebase, with deterministic validation, audit logging, a
 .github/
   copilot-instructions.md   # global governance, security, determinism rules
   agents/                   # orchestrator_agent.md + 1.req_agent ... 7.dashboard_agent
-  prompts/                  # *_instructions.md per phase
+  instructions/                  # *_instructions.md per phase
   skills/                   # modular capability packages (SKILL.md each)
   hooks/                    # pre_write_isolation.py, pre_tool_use_hitl.py, post_tool_use_audit.py
-  config/mcp.json           # MCP endpoints, ${VAR} only
+  (see .mcp.json at repo root) # MCP endpoints, ${VAR} only
   settings.json             # deny-all-then-allow least-privilege policy
 scripts/                    # validator.py, self_heal.py, cost_monitor.py
 state/                      # run.json, summary.md, memory.json, .approval (human-created)
@@ -44,7 +44,7 @@ eval/                       # golden_set.json, score.py (agent evaluation)
 1. Copy `.env.example` → `.env` and fill in `GITHUB_PAT`, `ATLASSIAN_BASIC_AUTH`. **Never commit `.env`.**
 2. Open `orchestrator_agent` as a custom agent and give it a Jira story ID or raw requirement text.
 3. It runs Phases 0–7 end-to-end in one session, pausing only at the Phase 6 HITL gate.
-4. To approve the PR gate: create an empty file at `state/.approval`, then resume the orchestrator.
+4. To approve the PR gate: run `python .github/hooks/pre_tool_use_hitl.py --approve` in your own terminal, review the PR details, and type `yes`. It writes `state/.approval` for you; then resume the orchestrator.
 
 ## Replaying a Run
 
@@ -74,6 +74,6 @@ appear anywhere in this repository, in prompts, in `workspace/artifacts/`, or in
 
 ## Security
 
-- Secrets live only in `.env` (gitignored) and are referenced as `${VAR}` in `.github/config/mcp.json`.
+- Secrets live only in `.env` (gitignored) and are referenced as `${VAR}` in `.mcp.json`.
 - `.github/settings.json` denies agent reads of `.env` and writes outside each agent's artifact folder.
 - See `.github/copilot-instructions.md` for the full governance model.

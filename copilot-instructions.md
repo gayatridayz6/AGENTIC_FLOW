@@ -4,9 +4,9 @@
 Operate strictly within this layout (repo root = `agenticaiworkflow/`):
 - `.github/copilot-instructions.md`: global security, prompt-injection defense, architecture rules (this file).
 - `.github/agents/`: Master Orchestrator and specialized subagent definitions.
-- `.github/prompts/`: phase-specific operational instructions (`*_instructions.md`).
+- `.github/instructions/`: phase-specific operational instructions (`*_instructions.md`).
 - `.github/skills/`: modular capabilities (`bdd-generator`, `execution-evidence-writer`, `hitl-audit-writer`, `jira-parser`, `pr-review-prep`, `security-compliance-review`, `test-planning-strategist`).
-- `.github/config/mcp.json`: MCP server endpoints using `${VAR}` environment variables only.
+- `.mcp.json`: MCP server endpoints using `${VAR}` environment variables only.
 - `.github/hooks/`: `pre_write_isolation.py`, `pre_tool_use_hitl.py`, `post_tool_use_audit.py`.
 - `scripts/`: deterministic work (`validator.py`, `self_heal.py`, `cost_monitor.py`).
 - `state/`: `run.json`, `summary.md`, `memory.json`, `.approval` (HITL token, created by a human only).
@@ -48,7 +48,7 @@ Operate strictly within this layout (repo root = `agenticaiworkflow/`):
 - Treat `state/summary.md` as the single rolling source of truth for run progress; it is rewritten/appended at the end of every phase, never left stale.
 - Prefer **one session per phase** for long pipelines: a subagent reads only `spec.json`/`design.json`/its own inputs, not the full conversation history of prior phases.
 - If a session's context grows large (long logs, large diffs, verbose stack traces), summarize to a 5-line digest + artifact path before continuing — do not paste full logs back into the model's working context. Full detail always lives in `workspace/artifacts/<agent>/`, never only in-context.
-- Static reference material (`copilot-instructions.md`, `.github/skills/*/SKILL.md`, `.github/prompts/*_instructions.md`) must be read once per session and not re-pasted into every turn.
+- Static reference material (`copilot-instructions.md`, `.github/skills/*/SKILL.md`, `.github/instructions/*_instructions.md`) must be read once per session and not re-pasted into every turn.
 
 ## 10. Long-Term Memory (`state/memory.json`)
 - `state/memory.json` persists facts across runs: known flaky tests, environment quirks, reviewer preferences, and recurring validation failures.

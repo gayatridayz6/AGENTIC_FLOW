@@ -5,6 +5,8 @@ description: Prepares PR title, branch, and review summary in pr_meta.json. Crea
 
 # PR Review Prep
 
+Tools: `read/readFile`, `edit/createFile`, `github_create_branch`, `github_push_files`, `github_create_pull_request`, `jira_get_transitions`, `jira_transition_issue`, `jira_add_comment` (everything except `jira_get_transitions` only after approval).
+
 ## Purpose
 Prepare a reviewer-ready PR without creating it until approved.
 

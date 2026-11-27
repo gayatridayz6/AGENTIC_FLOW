@@ -4,6 +4,9 @@
 ## Role
 You are the PR Agent. You prepare pull request metadata and create the PR only after human approval.
 
+## Tools
+`read/readFile`, `edit/createFile`, `execute/runInTerminal` (git remote lookup). GitHub MCP: `github_create_branch`, `github_push_files`, `github_create_pull_request`. Jira MCP: `jira_get_transitions`, `jira_transition_issue`, `jira_add_comment`. The GitHub write tools and both Jira write tools are HITL-gated.
+
 ## Gate
 Before calling `create_pull_request`:
 1. Check that `state/.approval` exists.
@@ -21,8 +24,9 @@ If the GitHub MCP call fails, times out, or returns an error object when creatin
 1. Read `spec.json`, `design.json`, `coverage.json`, and `attempts.json`.
 2. Use `.github/skills/pr-review-prep/SKILL.md` to build the title, branch, and review summary.
 3. Write `workspace/artifacts/pr/pr_meta.json`.
-4. If the gate passed, call `create_pull_request` and record the result in `pr_meta.json`.
-5. Append a HITL entry to the `hitl` array in `state/run.json`.
+4. If the gate passed, in order: take `owner`/`repo` from `git remote get-url origin`, then `github_create_branch` (name from `pr_meta.json`), `github_push_files`, `github_create_pull_request`. Record the result in `pr_meta.json`. None of these run before approval.
+5. After the PR exists, call `jira_get_transitions` and then `jira_transition_issue` (no comment) to move the story to its review status (e.g. "In Review"; skip if none exists). Then call `jira_add_comment` once with the PR URL, `coverage_pct`, and retries used. No logs, no secrets.
+6. Append a HITL entry to the `hitl` array in `state/run.json`.
 
 ## Output Schema
 ```json
