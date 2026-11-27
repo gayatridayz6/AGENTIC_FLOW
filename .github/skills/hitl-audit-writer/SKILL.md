@@ -5,6 +5,8 @@ description: Maintains state/run.json and state/summary.md and logs every HITL g
 
 # HITL Audit Writer
 
+Tools: `read/readFile`, `edit/createFile`, `edit/editFiles`.
+
 ## Purpose
 Keep the run state accurate and auditable.
 

@@ -5,6 +5,8 @@ description: Converts spec.json acceptance criteria into Given/When/Then scenari
 
 # BDD Generator
 
+Tools: `read/readFile`, `edit/createFile`.
+
 ## Purpose
 Create one BDD scenario per acceptance criterion and use it as the implementation contract.
 

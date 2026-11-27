@@ -1,0 +1,58 @@
+{
+  "story_id": "CCP-1",
+  "title": "feat(CCP-1): Add \"Add to Cart\" Button on Product Listing Page",
+  "branch": "feature/CCP-1-add-to-cart-button-on-product-listing-page",
+  "branch_note": "PROPOSED name only. This branch does not exist yet; the repo is currently on master. Creating or switching to it requires the user's explicit approval.",
+  "status": "created",
+  "pr_url": "https://github.com/gayatridayz6/AGENTIC_FLOW/pull/3",
+  "pr_number": 3,
+  "base": "master",
+  "head_commit": "1f10811",
+  "branch_exists": true,
+  "hitl": {
+    "gate": "create_pull_request",
+    "approved": true,
+    "approved_by": "human via state/.approval"
+  },
+  "review_summary": [
+    "Changed components (React 18 + Redux Toolkit): index, App, Header, CartIcon, ProductList, ProductCard, AddToCartButton (states: in stock, adding, added, out of stock, error), productsData, store, cartSlice, authSlice, cartService, cartStorage, validators, setupTests.",
+    "Covers acceptance criteria AC1-AC10: button on every card, add action, toast and 'Added' feedback, live header counter, out-of-stock disabled state, guest cart in localStorage (guest_cart), logged-in sync with the backend, responsive layout.",
+    "External endpoint consumed (not implemented here): POST /api/cart/add, body {productId, quantity}; covers AC2, AC3, AC4, AC7, AC8. Called only when auth.isAuthenticated is true. Statuses 200, 400, 401, 409 and 5xx are handled in the UI.",
+    "Line coverage 100% (functions 100%, branches 99.15%, statements 99.37%); threshold 70% met.",
+    "Tests: 268/268 passed across 11 suites.",
+    "Self-healing retries used: 1 (attempt 1 failed because jest also collected archive suites under workspace/; attempt 2 passed after the jest config patch). 2 attempts of max 3.",
+    "Open questions from spec: (1) epic taken from description text, not a Jira link; (2) priority Medium (field) vs High (description); (3) issue type Epic (Jira) vs Story (description); (4) /api/cart/add contract (method, payload, auth) unspecified; (5) how logged-in vs guest is determined is unspecified; (6) toast/feedback wording is only an example; (7) Jira assignee is empty."
+  ],
+  "risks": [
+    "Production gap 1 (LOW): isValidProductId accepts NaN, Infinity and -1, because String() output matches the id pattern. Documented in tests; production code not changed.",
+    "Production gap 2 (LOW): formatPrice(null) returns $0.00 because Number(null) === 0.",
+    "Production gap 3 (MEDIUM-LOW): a logged-in add that gets a 2xx response without a usable {items, count} body shows success ('Added' and a success toast), but the header counter does not change. Needs a server contract guarantee, or the thunk should refresh or increment.",
+    "Production gap 4 (LOW): on a 401 the toast shows the generic message; the session-expired text only lives in state.cart.error, and auth.isAuthenticated is not reset, so the user still appears logged in client-side.",
+    "Production gap 5 (DESIGN GAP): no guest-to-server cart merge on login and no GET cart on load, so a logged-in user's counter after reload starts from the guest localStorage count (usually 0).",
+    "Minor test-plan findings: toast is top-right on mobile in CSS although design says top-center; the button stays disabled for 2s after a successful add, which blocks rapid repeat adds; numeric product ids are sent to the API as numbers but stored as strings for guests.",
+    "Repo hygiene: coverage/ is NOT in .gitignore and must not be committed.",
+    "Stack override: the pipeline docs (generic arch/test docs) say Spring Boot/JUnit, but this change is a React/Redux frontend with Jest and Testing Library. The backend is external and out of scope. Reviewers should not expect a backend service.",
+    "Assumptions on API contract and auth: request {productId, quantity}; 200 returns {items, count}; errors 400, 401, 409, 5xx; auth is via httpOnly session cookie or a bearer token injected by a host-app interceptor; logged-in vs guest is read from auth.isAuthenticated. None of this is confirmed by the ticket. The server must revalidate input and own authN/authZ, pricing and inventory.",
+    "Untracked pipeline artifacts: state/, logs/ and workspace/ are untracked pipeline output (they include archived duplicate sources and tests) and are proposed for exclusion from the PR.",
+    "Jest config deviation: the test patch added roots and ignore patterns to jest.config.js so that archived suites under workspace/ are not collected; the root package.json and jest.config.js were modified, and package-lock.json is new (versions pinned from the lockfile). The jest.config.js and package.json diffs warn about an LF-to-CRLF line-ending conversion.",
+    "No security-compliance findings are recorded as open; the design's security controls (XSS-safe rendering, input validation, no tokens in storage, generic error messages) are covered by tests."
+  ],
+  "coverage_pct": 100,
+  "files_proposed_for_pr": [
+    "package.json",
+    "package-lock.json",
+    "jest.config.js",
+    ".babelrc",
+    ".gitignore",
+    "public/",
+    "src/"
+  ],
+  "files_excluded_from_pr": [
+    "node_modules/",
+    "coverage/",
+    "state/",
+    "logs/",
+    "workspace/"
+  ],
+  "exclusion_note": "The excluded paths stay out of the PR unless the human reviewer decides otherwise."
+}

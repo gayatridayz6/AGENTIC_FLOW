@@ -1,0 +1,32 @@
+{
+  "status": "passed",
+  "attempts": 2,
+  "max_retries": 3,
+  "story_id": "CCP-1",
+  "line_coverage_pct": 100,
+  "function_coverage_pct": 100,
+  "branch_coverage_pct": 99.15,
+  "statement_coverage_pct": 99.37,
+  "tests_total": 268,
+  "tests_passed": 268,
+  "tests_failed": 0,
+  "suites_total": 11,
+  "thresholds": {
+    "lines": 70,
+    "functions": 70,
+    "branches": 70,
+    "statements": 70
+  },
+  "threshold_met": true,
+  "attempt_history": [
+    {
+      "attempt": 1,
+      "result": "failed",
+      "reason": "jest collected 11 archive suites under workspace/ that cannot resolve imports (config issue); 11 real suites/268 tests passed"
+    },
+    {
+      "attempt": 2,
+      "result": "passed"
+    }
+  ]
+}

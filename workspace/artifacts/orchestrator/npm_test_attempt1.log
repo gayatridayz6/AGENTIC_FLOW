@@ -1,0 +1,357 @@
+jest-haste-map: Haste module naming collision: shopping-cart-feature
+  The following files share their name; please adjust your hasteImpl:
+    * <rootDir>\package.json
+    * <rootDir>\workspace\artifacts\dev\package.json
+
+FAIL workspace/artifacts/test/src/__tests__/store.test.js
+  ● Test suite failed to run
+
+    Cannot find module '../store' from 'workspace/artifacts/test/src/__tests__/store.test.js'
+
+    [0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m defaultStore[33m,[39m { createAppStore[33m,[39m store } [36mfrom[39m [32m'../store'[39m[33m;[39m
+     [90m   |[39m [31m[1m^[22m[39m
+     [90m 2 |[39m [36mimport[39m { setAuthenticated } [36mfrom[39m [32m'../store/authSlice'[39m[33m;[39m
+     [90m 3 |[39m [36mimport[39m { hydrateGuestCart[33m,[39m selectCartCount } [36mfrom[39m [32m'../store/cartSlice'[39m[33m;[39m
+     [90m 4 |[39m[0m
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.require (workspace/artifacts/test/src/__tests__/store.test.js:1:1)
+
+PASS src/__tests__/cartStorage.test.js (22.677 s)
+FAIL workspace/artifacts/test/src/__tests__/authSlice.test.js
+  ● Test suite failed to run
+
+    Cannot find module '../store/authSlice' from 'workspace/artifacts/test/src/__tests__/authSlice.test.js'
+
+    [0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m reducer[33m,[39m { selectIsAuthenticated[33m,[39m setAuthenticated } [36mfrom[39m [32m'../store/authSlice'[39m[33m;[39m
+     [90m   |[39m [31m[1m^[22m[39m
+     [90m 2 |[39m
+     [90m 3 |[39m describe([32m'authSlice'[39m[33m,[39m () [33m=>[39m {
+     [90m 4 |[39m   it([32m'AC6: starts as a guest (isAuthenticated=false)'[39m[33m,[39m () [33m=>[39m {[0m
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.require (workspace/artifacts/test/src/__tests__/authSlice.test.js:1:1)
+
+FAIL workspace/artifacts/test/src/__tests__/cartService.test.js
+  ● Test suite failed to run
+
+    Cannot find module '../services/cartService' from 'workspace/artifacts/test/src/__tests__/cartService.test.js'
+
+    [0m [90m 1 |[39m [36mimport[39m axios [36mfrom[39m [32m'axios'[39m[33m;[39m
+    [31m[1m>[22m[39m[90m 2 |[39m [36mimport[39m cartServiceDefault[33m,[39m {
+     [90m   |[39m [31m[1m^[22m[39m
+     [90m 3 |[39m   [33mADD_TO_CART_PATH[39m[33m,[39m
+     [90m 4 |[39m   [33mCartError[39m[33m,[39m
+     [90m 5 |[39m   [33mGENERIC_ERROR_MESSAGE[39m[33m,[39m[0m
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.require (workspace/artifacts/test/src/__tests__/cartService.test.js:2:1)
+
+PASS src/__tests__/cartService.test.js (23.13 s)
+FAIL workspace/artifacts/test/src/__tests__/validators.test.js
+  ● Test suite failed to run
+
+    Cannot find module '../utils/validators' from 'workspace/artifacts/test/src/__tests__/validators.test.js'
+
+    [0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m {
+     [90m   |[39m [31m[1m^[22m[39m
+     [90m 2 |[39m   [33mMAX_CART_ENTRIES[39m[33m,[39m
+     [90m 3 |[39m   [33mMAX_QUANTITY[39m[33m,[39m
+     [90m 4 |[39m   [33mMIN_QUANTITY[39m[33m,[39m[0m
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.require (workspace/artifacts/test/src/__tests__/validators.test.js:1:1)
+
+PASS src/__tests__/store.test.js
+FAIL workspace/artifacts/test/src/__tests__/cartStorage.test.js
+  ● Test suite failed to run
+
+    Cannot find module '../services/cartStorage' from 'workspace/artifacts/test/src/__tests__/cartStorage.test.js'
+
+    [0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m {
+     [90m   |[39m [31m[1m^[22m[39m
+     [90m 2 |[39m   [33mGUEST_CART_KEY[39m[33m,[39m
+     [90m 3 |[39m   addGuestItem[33m,[39m
+     [90m 4 |[39m   clearGuestCart[33m,[39m[0m
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.require (workspace/artifacts/test/src/__tests__/cartStorage.test.js:1:1)
+
+FAIL workspace/artifacts/test/src/__tests__/cartSlice.test.js
+  ● Test suite failed to run
+
+    Cannot find module '../store/cartSlice' from 'workspace/artifacts/test/src/__tests__/cartSlice.test.js'
+
+    [0m [90m 1 |[39m [36mimport[39m axios [36mfrom[39m [32m'axios'[39m[33m;[39m
+    [31m[1m>[22m[39m[90m 2 |[39m [36mimport[39m reducer[33m,[39m {
+     [90m   |[39m [31m[1m^[22m[39m
+     [90m 3 |[39m   addToCart[33m,[39m
+     [90m 4 |[39m   computeCount[33m,[39m
+     [90m 5 |[39m   hydrateGuestCart[33m,[39m[0m
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.require (workspace/artifacts/test/src/__tests__/cartSlice.test.js:2:1)
+
+PASS src/__tests__/authSlice.test.js
+PASS src/__tests__/validators.test.js (23.271 s)
+PASS src/__tests__/cartSlice.test.js (22.729 s)
+FAIL workspace/artifacts/test/src/__tests__/responsive.test.jsx
+  ● Test suite failed to run
+
+    Cannot find module '../App' from 'workspace/artifacts/test/src/__tests__/responsive.test.jsx'
+
+    [0m [90m 3 |[39m [36mimport[39m { render[33m,[39m screen[33m,[39m within } [36mfrom[39m [32m'@testing-library/react'[39m[33m;[39m
+     [90m 4 |[39m [36mimport[39m { [33mProvider[39m } [36mfrom[39m [32m'react-redux'[39m[33m;[39m
+    [31m[1m>[22m[39m[90m 5 |[39m [36mimport[39m [33mApp[39m [36mfrom[39m [32m'../App'[39m[33m;[39m
+     [90m   |[39m [31m[1m^[22m[39m
+     [90m 6 |[39m [36mimport[39m productsData [36mfrom[39m [32m'../data/products'[39m[33m;[39m
+     [90m 7 |[39m [36mimport[39m { createAppStore } [36mfrom[39m [32m'../store'[39m[33m;[39m
+     [90m 8 |[39m[0m
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.require (workspace/artifacts/test/src/__tests__/responsive.test.jsx:5:1)
+
+FAIL workspace/artifacts/test/src/__tests__/ProductList.test.jsx
+  ● Test suite failed to run
+
+    Cannot find module '../components/ProductCard' from 'workspace/artifacts/test/src/__tests__/ProductList.test.jsx'
+
+    [0m [90m 1 |[39m [36mimport[39m { render[33m,[39m screen[33m,[39m within } [36mfrom[39m [32m'@testing-library/react'[39m[33m;[39m
+     [90m 2 |[39m [36mimport[39m { [33mProvider[39m } [36mfrom[39m [32m'react-redux'[39m[33m;[39m
+    [31m[1m>[22m[39m[90m 3 |[39m [36mimport[39m [33mProductCard[39m[33m,[39m { formatPrice } [36mfrom[39m [32m'../components/ProductCard'[39m[33m;[39m
+     [90m   |[39m [31m[1m^[22m[39m
+     [90m 4 |[39m [36mimport[39m [33mProductList[39m [36mfrom[39m [32m'../components/ProductList'[39m[33m;[39m
+     [90m 5 |[39m [36mimport[39m productsData [36mfrom[39m [32m'../data/products'[39m[33m;[39m
+     [90m 6 |[39m [36mimport[39m { createAppStore } [36mfrom[39m [32m'../store'[39m[33m;[39m[0m
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.require (workspace/artifacts/test/src/__tests__/ProductList.test.jsx:3:1)
+
+FAIL workspace/artifacts/test/src/__tests__/Header.test.jsx
+  ● Test suite failed to run
+
+    Cannot find module '../components/CartIcon' from 'workspace/artifacts/test/src/__tests__/Header.test.jsx'
+
+    [0m [90m 1 |[39m [36mimport[39m { act[33m,[39m render[33m,[39m screen } [36mfrom[39m [32m'@testing-library/react'[39m[33m;[39m
+     [90m 2 |[39m [36mimport[39m { [33mProvider[39m } [36mfrom[39m [32m'react-redux'[39m[33m;[39m
+    [31m[1m>[22m[39m[90m 3 |[39m [36mimport[39m [33mCartIcon[39m[33m,[39m { [33mCartIcon[39m [36mas[39m [33mNamedCartIcon[39m } [36mfrom[39m [32m'../components/CartIcon'[39m[33m;[39m
+     [90m   |[39m [31m[1m^[22m[39m
+     [90m 4 |[39m [36mimport[39m [33mHeader[39m[33m,[39m { [33mHeader[39m [36mas[39m [33mNamedHeader[39m } [36mfrom[39m [32m'../components/Header'[39m[33m;[39m
+     [90m 5 |[39m [36mimport[39m { createAppStore } [36mfrom[39m [32m'../store'[39m[33m;[39m
+     [90m 6 |[39m [36mimport[39m { hydrateGuestCart } [36mfrom[39m [32m'../store/cartSlice'[39m[33m;[39m[0m
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.require (workspace/artifacts/test/src/__tests__/Header.test.jsx:3:1)
+
+FAIL workspace/artifacts/test/src/__tests__/App.test.jsx
+  ● Test suite failed to run
+
+    Cannot find module '../App' from 'workspace/artifacts/test/src/__tests__/App.test.jsx'
+
+    [0m [90m 4 |[39m [36mimport[39m { [33mProvider[39m } [36mfrom[39m [32m'react-redux'[39m[33m;[39m
+     [90m 5 |[39m [36mimport[39m { toast } [36mfrom[39m [32m'react-toastify'[39m[33m;[39m
+    [31m[1m>[22m[39m[90m 6 |[39m [36mimport[39m [33mApp[39m[33m,[39m { [33mApp[39m [36mas[39m [33mNamedApp[39m } [36mfrom[39m [32m'../App'[39m[33m;[39m
+     [90m   |[39m [31m[1m^[22m[39m
+     [90m 7 |[39m [36mimport[39m productsData [36mfrom[39m [32m'../data/products'[39m[33m;[39m
+     [90m 8 |[39m [36mimport[39m { createAppStore } [36mfrom[39m [32m'../store'[39m[33m;[39m
+     [90m 9 |[39m[0m
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.require (workspace/artifacts/test/src/__tests__/App.test.jsx:6:1)
+
+FAIL workspace/artifacts/test/src/__tests__/AddToCartButton.test.jsx
+  ● Test suite failed to run
+
+    Cannot find module '../components/AddToCartButton' from 'workspace/artifacts/test/src/__tests__/AddToCartButton.test.jsx'
+
+    [0m [90m 4 |[39m [36mimport[39m { [33mProvider[39m } [36mfrom[39m [32m'react-redux'[39m[33m;[39m
+     [90m 5 |[39m [36mimport[39m { toast } [36mfrom[39m [32m'react-toastify'[39m[33m;[39m
+    [31m[1m>[22m[39m[90m 6 |[39m [36mimport[39m [33mAddToCartButton[39m[33m,[39m {
+     [90m   |[39m [31m[1m^[22m[39m
+     [90m 7 |[39m   [33mADDED_DURATION_MS[39m[33m,[39m
+     [90m 8 |[39m   [33mAddToCartButton[39m [36mas[39m [33mNamedAddToCartButton[39m[33m,[39m
+     [90m 9 |[39m   [33mSUCCESS_MESSAGE[39m[33m,[39m[0m
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.require (workspace/artifacts/test/src/__tests__/AddToCartButton.test.jsx:6:1)
+
+PASS src/__tests__/Header.test.jsx (27.099 s)
+PASS src/__tests__/responsive.test.jsx (26.799 s)
+PASS src/__tests__/ProductList.test.jsx (26.653 s)
+PASS src/__tests__/App.test.jsx (26.203 s)
+PASS src/__tests__/AddToCartButton.test.jsx (26.822 s)
+
+Summary of all failing tests
+FAIL workspace/artifacts/test/src/__tests__/store.test.js
+  ● Test suite failed to run
+
+    Cannot find module '../store' from 'workspace/artifacts/test/src/__tests__/store.test.js'
+
+    [0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m defaultStore[33m,[39m { createAppStore[33m,[39m store } [36mfrom[39m [32m'../store'[39m[33m;[39m
+     [90m   |[39m [31m[1m^[22m[39m
+     [90m 2 |[39m [36mimport[39m { setAuthenticated } [36mfrom[39m [32m'../store/authSlice'[39m[33m;[39m
+     [90m 3 |[39m [36mimport[39m { hydrateGuestCart[33m,[39m selectCartCount } [36mfrom[39m [32m'../store/cartSlice'[39m[33m;[39m
+     [90m 4 |[39m[0m
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.require (workspace/artifacts/test/src/__tests__/store.test.js:1:1)
+
+FAIL workspace/artifacts/test/src/__tests__/authSlice.test.js
+  ● Test suite failed to run
+
+    Cannot find module '../store/authSlice' from 'workspace/artifacts/test/src/__tests__/authSlice.test.js'
+
+    [0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m reducer[33m,[39m { selectIsAuthenticated[33m,[39m setAuthenticated } [36mfrom[39m [32m'../store/authSlice'[39m[33m;[39m
+     [90m   |[39m [31m[1m^[22m[39m
+     [90m 2 |[39m
+     [90m 3 |[39m describe([32m'authSlice'[39m[33m,[39m () [33m=>[39m {
+     [90m 4 |[39m   it([32m'AC6: starts as a guest (isAuthenticated=false)'[39m[33m,[39m () [33m=>[39m {[0m
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.require (workspace/artifacts/test/src/__tests__/authSlice.test.js:1:1)
+
+FAIL workspace/artifacts/test/src/__tests__/cartService.test.js
+  ● Test suite failed to run
+
+    Cannot find module '../services/cartService' from 'workspace/artifacts/test/src/__tests__/cartService.test.js'
+
+    [0m [90m 1 |[39m [36mimport[39m axios [36mfrom[39m [32m'axios'[39m[33m;[39m
+    [31m[1m>[22m[39m[90m 2 |[39m [36mimport[39m cartServiceDefault[33m,[39m {
+     [90m   |[39m [31m[1m^[22m[39m
+     [90m 3 |[39m   [33mADD_TO_CART_PATH[39m[33m,[39m
+     [90m 4 |[39m   [33mCartError[39m[33m,[39m
+     [90m 5 |[39m   [33mGENERIC_ERROR_MESSAGE[39m[33m,[39m[0m
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.require (workspace/artifacts/test/src/__tests__/cartService.test.js:2:1)
+
+FAIL workspace/artifacts/test/src/__tests__/validators.test.js
+  ● Test suite failed to run
+
+    Cannot find module '../utils/validators' from 'workspace/artifacts/test/src/__tests__/validators.test.js'
+
+    [0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m {
+     [90m   |[39m [31m[1m^[22m[39m
+     [90m 2 |[39m   [33mMAX_CART_ENTRIES[39m[33m,[39m
+     [90m 3 |[39m   [33mMAX_QUANTITY[39m[33m,[39m
+     [90m 4 |[39m   [33mMIN_QUANTITY[39m[33m,[39m[0m
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.require (workspace/artifacts/test/src/__tests__/validators.test.js:1:1)
+
+FAIL workspace/artifacts/test/src/__tests__/cartStorage.test.js
+  ● Test suite failed to run
+
+    Cannot find module '../services/cartStorage' from 'workspace/artifacts/test/src/__tests__/cartStorage.test.js'
+
+    [0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m {
+     [90m   |[39m [31m[1m^[22m[39m
+     [90m 2 |[39m   [33mGUEST_CART_KEY[39m[33m,[39m
+     [90m 3 |[39m   addGuestItem[33m,[39m
+     [90m 4 |[39m   clearGuestCart[33m,[39m[0m
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.require (workspace/artifacts/test/src/__tests__/cartStorage.test.js:1:1)
+
+FAIL workspace/artifacts/test/src/__tests__/cartSlice.test.js
+  ● Test suite failed to run
+
+    Cannot find module '../store/cartSlice' from 'workspace/artifacts/test/src/__tests__/cartSlice.test.js'
+
+    [0m [90m 1 |[39m [36mimport[39m axios [36mfrom[39m [32m'axios'[39m[33m;[39m
+    [31m[1m>[22m[39m[90m 2 |[39m [36mimport[39m reducer[33m,[39m {
+     [90m   |[39m [31m[1m^[22m[39m
+     [90m 3 |[39m   addToCart[33m,[39m
+     [90m 4 |[39m   computeCount[33m,[39m
+     [90m 5 |[39m   hydrateGuestCart[33m,[39m[0m
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.require (workspace/artifacts/test/src/__tests__/cartSlice.test.js:2:1)
+
+FAIL workspace/artifacts/test/src/__tests__/responsive.test.jsx
+  ● Test suite failed to run
+
+    Cannot find module '../App' from 'workspace/artifacts/test/src/__tests__/responsive.test.jsx'
+
+    [0m [90m 3 |[39m [36mimport[39m { render[33m,[39m screen[33m,[39m within } [36mfrom[39m [32m'@testing-library/react'[39m[33m;[39m
+     [90m 4 |[39m [36mimport[39m { [33mProvider[39m } [36mfrom[39m [32m'react-redux'[39m[33m;[39m
+    [31m[1m>[22m[39m[90m 5 |[39m [36mimport[39m [33mApp[39m [36mfrom[39m [32m'../App'[39m[33m;[39m
+     [90m   |[39m [31m[1m^[22m[39m
+     [90m 6 |[39m [36mimport[39m productsData [36mfrom[39m [32m'../data/products'[39m[33m;[39m
+     [90m 7 |[39m [36mimport[39m { createAppStore } [36mfrom[39m [32m'../store'[39m[33m;[39m
+     [90m 8 |[39m[0m
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.require (workspace/artifacts/test/src/__tests__/responsive.test.jsx:5:1)
+
+FAIL workspace/artifacts/test/src/__tests__/ProductList.test.jsx
+  ● Test suite failed to run
+
+    Cannot find module '../components/ProductCard' from 'workspace/artifacts/test/src/__tests__/ProductList.test.jsx'
+
+    [0m [90m 1 |[39m [36mimport[39m { render[33m,[39m screen[33m,[39m within } [36mfrom[39m [32m'@testing-library/react'[39m[33m;[39m
+     [90m 2 |[39m [36mimport[39m { [33mProvider[39m } [36mfrom[39m [32m'react-redux'[39m[33m;[39m
+    [31m[1m>[22m[39m[90m 3 |[39m [36mimport[39m [33mProductCard[39m[33m,[39m { formatPrice } [36mfrom[39m [32m'../components/ProductCard'[39m[33m;[39m
+     [90m   |[39m [31m[1m^[22m[39m
+     [90m 4 |[39m [36mimport[39m [33mProductList[39m [36mfrom[39m [32m'../components/ProductList'[39m[33m;[39m
+     [90m 5 |[39m [36mimport[39m productsData [36mfrom[39m [32m'../data/products'[39m[33m;[39m
+     [90m 6 |[39m [36mimport[39m { createAppStore } [36mfrom[39m [32m'../store'[39m[33m;[39m[0m
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.require (workspace/artifacts/test/src/__tests__/ProductList.test.jsx:3:1)
+
+FAIL workspace/artifacts/test/src/__tests__/Header.test.jsx
+  ● Test suite failed to run
+
+    Cannot find module '../components/CartIcon' from 'workspace/artifacts/test/src/__tests__/Header.test.jsx'
+
+    [0m [90m 1 |[39m [36mimport[39m { act[33m,[39m render[33m,[39m screen } [36mfrom[39m [32m'@testing-library/react'[39m[33m;[39m
+     [90m 2 |[39m [36mimport[39m { [33mProvider[39m } [36mfrom[39m [32m'react-redux'[39m[33m;[39m
+    [31m[1m>[22m[39m[90m 3 |[39m [36mimport[39m [33mCartIcon[39m[33m,[39m { [33mCartIcon[39m [36mas[39m [33mNamedCartIcon[39m } [36mfrom[39m [32m'../components/CartIcon'[39m[33m;[39m
+     [90m   |[39m [31m[1m^[22m[39m
+     [90m 4 |[39m [36mimport[39m [33mHeader[39m[33m,[39m { [33mHeader[39m [36mas[39m [33mNamedHeader[39m } [36mfrom[39m [32m'../components/Header'[39m[33m;[39m
+     [90m 5 |[39m [36mimport[39m { createAppStore } [36mfrom[39m [32m'../store'[39m[33m;[39m
+     [90m 6 |[39m [36mimport[39m { hydrateGuestCart } [36mfrom[39m [32m'../store/cartSlice'[39m[33m;[39m[0m
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.require (workspace/artifacts/test/src/__tests__/Header.test.jsx:3:1)
+
+FAIL workspace/artifacts/test/src/__tests__/App.test.jsx
+  ● Test suite failed to run
+
+    Cannot find module '../App' from 'workspace/artifacts/test/src/__tests__/App.test.jsx'
+
+    [0m [90m 4 |[39m [36mimport[39m { [33mProvider[39m } [36mfrom[39m [32m'react-redux'[39m[33m;[39m
+     [90m 5 |[39m [36mimport[39m { toast } [36mfrom[39m [32m'react-toastify'[39m[33m;[39m
+    [31m[1m>[22m[39m[90m 6 |[39m [36mimport[39m [33mApp[39m[33m,[39m { [33mApp[39m [36mas[39m [33mNamedApp[39m } [36mfrom[39m [32m'../App'[39m[33m;[39m
+     [90m   |[39m [31m[1m^[22m[39m
+     [90m 7 |[39m [36mimport[39m productsData [36mfrom[39m [32m'../data/products'[39m[33m;[39m
+     [90m 8 |[39m [36mimport[39m { createAppStore } [36mfrom[39m [32m'../store'[39m[33m;[39m
+     [90m 9 |[39m[0m
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.require (workspace/artifacts/test/src/__tests__/App.test.jsx:6:1)
+
+FAIL workspace/artifacts/test/src/__tests__/AddToCartButton.test.jsx
+  ● Test suite failed to run
+
+    Cannot find module '../components/AddToCartButton' from 'workspace/artifacts/test/src/__tests__/AddToCartButton.test.jsx'
+
+    [0m [90m 4 |[39m [36mimport[39m { [33mProvider[39m } [36mfrom[39m [32m'react-redux'[39m[33m;[39m
+     [90m 5 |[39m [36mimport[39m { toast } [36mfrom[39m [32m'react-toastify'[39m[33m;[39m
+    [31m[1m>[22m[39m[90m 6 |[39m [36mimport[39m [33mAddToCartButton[39m[33m,[39m {
+     [90m   |[39m [31m[1m^[22m[39m
+     [90m 7 |[39m   [33mADDED_DURATION_MS[39m[33m,[39m
+     [90m 8 |[39m   [33mAddToCartButton[39m [36mas[39m [33mNamedAddToCartButton[39m[33m,[39m
+     [90m 9 |[39m   [33mSUCCESS_MESSAGE[39m[33m,[39m[0m
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.require (workspace/artifacts/test/src/__tests__/AddToCartButton.test.jsx:6:1)
+
+
+Test Suites: 11 failed, 11 passed, 22 total
+Tests:       268 passed, 268 total
+Snapshots:   0 total
+Time:        34.052 s
+Ran all test suites.
+Test results written to: workspace\artifacts\orchestrator\jest_results.json

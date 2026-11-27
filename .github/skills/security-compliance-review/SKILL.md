@@ -5,6 +5,8 @@ description: Reviews design and code for OWASP Top 10 risks, hardcoded secrets, 
 
 # Security Compliance Review
 
+Tools: `read/readFile`, `edit/createFile`.
+
 ## Purpose
 Find security gaps in `design.json` and in `workspace/artifacts/dev/` before they reach a PR.
 

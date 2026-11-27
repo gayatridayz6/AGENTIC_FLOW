@@ -31,9 +31,9 @@
     }
   ],
   "allow": [
-    { "rule": "read-config-with-var-refs", "pattern": ".github/config/mcp.json" },
+    { "rule": "read-config-with-var-refs", "pattern": ".mcp.json" },
     { "rule": "read-own-artifacts", "pattern": "workspace/artifacts/<self>/**" },
-    { "rule": "read-shared-instructions", "pattern": ".github/prompts/**, .github/skills/**, .github/copilot-instructions.md" }
+    { "rule": "read-shared-instructions", "pattern": ".github/instructions/**, .github/skills/**, .github/copilot-instructions.md" }
   ],
   "default_policy": "deny-all-then-allow-listed"
 }

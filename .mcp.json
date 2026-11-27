@@ -9,15 +9,16 @@
     },
 
     "atlassian": {
-      "type": "http",
-      "url": "https://epam-team-piqzdqdk.atlassian.net/rest/api/3",
-      "headers": {
-        "Authorization": "Basic ${ATLASSIAN_BASIC_AUTH}",
-        "Content-Type": "application/json",
-        "Accept": "application/json"
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["mcp-atlassian"],
+      "env": {
+        "JIRA_URL": "https://epam-team-piqzdqdk.atlassian.net",
+        "JIRA_USERNAME": "${JIRA_USERNAME}",
+        "JIRA_API_TOKEN": "${ATLASSIAN_BASIC_AUTH}"
       }
     }
   },
   "_security_note": "All sensitive tokens must be loaded from .env file or environment variables only. NEVER commit actual tokens to version control.",
-  "_jira_api_note": "Use /rest/api/3/issues/{key} endpoint for fetching story details. For browsing, use /projects/{project}/issues/{key} path in UI."
+  "_jira_api_note": "ATLASSIAN_BASIC_AUTH holds the raw Atlassian API token (not base64). The mcp-atlassian stdio server pairs it with JIRA_USERNAME."
 }

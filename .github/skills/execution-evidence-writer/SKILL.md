@@ -5,6 +5,8 @@ description: Records test results, retry attempts, coverage, and builds the obse
 
 # Execution Evidence Writer
 
+Tools: `read/readFile`, `execute/runInTerminal`. Phase 7 (dashboard) only: `edit/createFile`.
+
 ## Purpose
 Write evidence only. Numbers come from scripts, never from model memory.
 

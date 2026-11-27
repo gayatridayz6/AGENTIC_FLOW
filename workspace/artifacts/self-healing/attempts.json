@@ -1,0 +1,14 @@
+{
+  "attempts": 2,
+  "history": [
+    {
+      "attempt": 1,
+      "result": "failed",
+      "reason": "jest collected 11 archive suites under workspace/ that cannot resolve imports (config issue); 11 real suites/268 tests passed"
+    },
+    {
+      "attempt": 2,
+      "result": "passed"
+    }
+  ]
+}
