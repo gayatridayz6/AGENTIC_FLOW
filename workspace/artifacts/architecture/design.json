@@ -1,0 +1,160 @@
+{
+  "story_id": "CCP-1",
+  "title": "Add \"Add to Cart\" Button on Product Listing Page",
+  "stack": "React 18 + Redux Toolkit + react-toastify + axios (frontend); Node/Express-style REST backend contract; Jest + React Testing Library",
+  "notes": "Layer mapping for this React/Redux stack (schema enum is controller|service|repository|dto): controller = REST API endpoint/contract and UI components that receive user events and delegate; service = src/services modules and Redux thunks (business logic, API client); repository = storage/state layer (localStorage via cartStorage, Redux slices as the in-memory store, static catalogue data); dto = request/response payload shapes and validators. Spring Boot guidance in arch_instructions.md was intentionally not applied; the run targets the existing React + Redux + Jest repo. ACs 1, 5 and 6 are mainly client-side: they are covered by UI components plus the 'CLIENT' pseudo-endpoint entry (not a real HTTP route). state/memory.json was empty, so no learned patterns were applied.",
+  "components": [
+    {"name": "ProductList", "layer": "controller", "responsibility": "src/components/ProductList.jsx. Renders the product catalogue grid from the catalogue source (src/data/products.js now, GET /api/products later) and one ProductCard per product. Handles empty/error states. Covers AC 1.", "covers_ac": [1]},
+    {"name": "ProductCard", "layer": "controller", "responsibility": "src/components/ProductCard.jsx. Presentational card (name, price, safe image) that always includes an AddToCartButton for every product. Text is rendered via React escaping only (no dangerouslySetInnerHTML); imageUrl must pass isSafeImageUrl (http/https only). Covers AC 1.", "covers_ac": [1]},
+    {"name": "AddToCartButton", "layer": "controller", "responsibility": "src/components/AddToCartButton.jsx. Per-product button with states idle ('Add to Cart'), adding (disabled, aria-busy), added ('Added ✓' for about 2s, then reset), error ('Try again') and out_of_stock (disabled, label 'Out of Stock'). Dispatches the addToCart thunk, shows toast 'Item added to cart!' on success and a generic toast on failure, announces success via an aria-live region. Covers AC 1, 2, 3, 5.", "covers_ac": [1, 2, 3, 5]},
+    {"name": "Header", "layer": "controller", "responsibility": "src/components/Header.jsx. Site header containing the CartIcon; the place where the live cart count is visible. Covers AC 4.", "covers_ac": [4]},
+    {"name": "CartIcon", "layer": "controller", "responsibility": "src/components/CartIcon.jsx. Subscribes to the Redux cart count selector and renders the badge with an accessible label (e.g. 'Cart, N items'). Re-renders immediately on state change so the counter updates in real time without a page reload. Covers AC 4.", "covers_ac": [4]},
+    {"name": "App", "layer": "controller", "responsibility": "src/App.jsx / src/index.jsx. Composition root: Redux Provider, ToastContainer, Header and ProductList. On mount hydrates the guest cart from localStorage (hydrateGuestCart) so the counter is correct after reload. Covers AC 4, 6.", "covers_ac": [4, 6]},
+    {"name": "cartSlice", "layer": "service", "responsibility": "src/store/cartSlice.js. Redux Toolkit slice holding items, count, statusByProduct and a safe error. The addToCart async thunk validates input first, then branches on authentication (logged-in: API via cartService; guest: localStorage via cartStorage) and returns only schema-validated items/count. Reducers hydrateGuestCart and resetAddStatus. Single source of truth for the header counter. Covers AC 2, 3, 4, 5, 6, 7.", "covers_ac": [2, 3, 4, 5, 6, 7]},
+    {"name": "authSlice", "layer": "repository", "responsibility": "src/store/authSlice.js. Holds only a boolean isAuthenticated flag set by the host app's login flow (assumed contract). No tokens, passwords or user PII are stored in client state; the session is carried by an HttpOnly cookie. Covers AC 6, 7.", "covers_ac": [6, 7]},
+    {"name": "store", "layer": "repository", "responsibility": "src/store/index.js. configureStore combining cart and auth reducers (Redux DevTools disabled in production builds). Covers AC 4.", "covers_ac": [4]},
+    {"name": "cartService", "layer": "service", "responsibility": "src/services/cartService.js. axios client (baseURL from REACT_APP_API_BASE_URL env var, withCredentials, 10s timeout) exposing addItem(productId, quantity) -> POST /api/cart/add. Validates input before sending; maps HTTP errors (400, 401, 409, 5xx/network) to a CartError carrying only a safe user-facing message. Covers AC 2, 5, 7.", "covers_ac": [2, 5, 7]},
+    {"name": "cartStorage", "layer": "repository", "responsibility": "src/services/cartStorage.js. Guest cart persistence in window.localStorage under key 'guest_cart' (assumption: localStorage rather than sessionStorage). loadGuestCart validates the JSON schema and returns [] on corrupt/tampered data; saveGuestCart validates before write and survives quota/security errors; addGuestItem merges quantities capped at MAX_QUANTITY (99) and MAX_CART_ENTRIES (100). Covers AC 6.", "covers_ac": [6]},
+    {"name": "validators", "layer": "dto", "responsibility": "src/utils/validators.js. Shared validation for the cart payload DTO: productId matches /^[A-Za-z0-9_-]{1,64}$/, quantity is an integer 1..99, cart schema (array max 100 of {productId, quantity}), and isSafeImageUrl (http/https only). Used identically by UI, thunk, service and storage. Covers AC 2, 6, 7.", "covers_ac": [2, 6, 7]},
+    {"name": "AddToCartRequestDTO", "layer": "dto", "responsibility": "Request payload for POST /api/cart/add: { productId: string (^[A-Za-z0-9_-]{1,64}$), quantity: integer 1..99 }. The server must re-validate (client validation is not trusted). Covers AC 2, 7.", "covers_ac": [2, 7]},
+    {"name": "CartResponseDTO", "layer": "dto", "responsibility": "Response payload: { items: [{ productId, quantity }], count: integer >= 0 }. The client re-validates it with validateCartSchema and falls back to a locally computed count; unknown fields are ignored. Covers AC 2, 4, 7.", "covers_ac": [2, 4, 7]},
+    {"name": "productsCatalogue", "layer": "repository", "responsibility": "src/data/products.js. Synthetic catalogue ({ id, name, price, imageUrl, inStock }) used until a catalogue API exists; inStock drives the Out of Stock state. Synthetic data only. Covers AC 1, 5.", "covers_ac": [1, 5]},
+    {"name": "CartApi (backend)", "layer": "controller", "responsibility": "Assumed Node/Express backend (outside this repo's src/). Authenticates the session cookie, re-validates the payload, checks stock server-side, persists the cart for the user in the database using parameterized queries/ORM only, and returns CartResponseDTO. Covers AC 2, 4, 5, 7.", "covers_ac": [2, 4, 5, 7]}
+  ],
+  "endpoints": [
+    {
+      "method": "POST",
+      "path": "/api/cart/add",
+      "access": "Authenticated (logged-in users only); session via HttpOnly, Secure, SameSite cookie. Guests never call this endpoint.",
+      "request": {"productId": "string ^[A-Za-z0-9_-]{1,64}$", "quantity": "integer 1..99 (default 1)"},
+      "covers_ac": [2, 3, 4, 5, 7],
+      "responses": {
+        "200": "Item added; body { items: [{productId, quantity}], count } with the authoritative cart count used to update the header (AC 2, 3, 4, 7).",
+        "400": "Invalid productId/quantity or malformed JSON; generic message, no field-level internals.",
+        "401": "Not authenticated or session expired; client shows 'Your session has expired. Please sign in again.'",
+        "403": "CSRF token/origin check failed.",
+        "404": "Unknown productId (generic message).",
+        "409": "Product out of stock (server-side authority for AC 5); client shows 'This item is out of stock.' and disables the button.",
+        "429": "Rate limit exceeded; client shows a generic retry message.",
+        "500": "Unexpected error; generic message only, no stack trace or internals."
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/cart",
+      "access": "Authenticated (logged-in users only). Assumed endpoint, not in the Jira ticket.",
+      "covers_ac": [4, 7],
+      "responses": {
+        "200": "Current server-side cart { items, count } fetched after login/page load so the header counter reflects the DB-synced cart (AC 4, 7).",
+        "401": "Not authenticated.",
+        "500": "Generic error."
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/cart/merge",
+      "access": "Authenticated (logged-in users only). Assumed optional endpoint; flagged as an open question.",
+      "request": {"items": "array (max 100) of { productId, quantity } validated like AddToCartRequestDTO"},
+      "covers_ac": [6, 7],
+      "responses": {
+        "200": "Guest cart items merged into the user's server cart (quantities summed, capped at 99); client then calls clearGuestCart() and replaces state with the returned { items, count }.",
+        "400": "Invalid or oversized payload.",
+        "401": "Not authenticated.",
+        "413": "Payload too large.",
+        "429": "Rate limited.",
+        "500": "Generic error."
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/products",
+      "access": "Public. Assumed endpoint; today the catalogue is the static src/data/products.js.",
+      "covers_ac": [1, 5],
+      "responses": {
+        "200": "List of { id, name, price, imageUrl, inStock }; one ProductCard each with an Add to Cart button on every card (AC 1); inStock=false renders a disabled 'Out of Stock' button (AC 5).",
+        "500": "Generic error; ProductList shows a safe error state."
+      }
+    },
+    {
+      "method": "CLIENT",
+      "path": "localStorage:guest_cart",
+      "access": "Guest (not authenticated). Pseudo-endpoint representing the client-only guest flow handled by cartStorage; no network call is made.",
+      "covers_ac": [1, 2, 3, 4, 5, 6],
+      "responses": {
+        "success": "Item merged into the validated guest cart in localStorage, Redux count updated, toast and 'Added ✓' shown (AC 2, 3, 4, 6).",
+        "INVALID_INPUT": "Rejected before write; generic error toast.",
+        "CART_FULL": "More than 100 distinct entries; rejected with a generic error.",
+        "STORAGE_FAILED": "Quota/security error writing localStorage; generic error toast, cart state is not falsely incremented."
+      }
+    }
+  ],
+  "ui_behavior_mapping": [
+    {"ac": 1, "criterion": "Add to Cart button visible on every product card", "components": ["ProductList", "ProductCard", "AddToCartButton"], "behavior": "ProductList maps every product to a ProductCard and every ProductCard always renders an AddToCartButton (including out-of-stock items, where it is disabled)."},
+    {"ac": 2, "criterion": "Click adds item to cart", "components": ["AddToCartButton", "cartSlice", "cartService", "cartStorage"], "behavior": "Click dispatches addToCart; authenticated users hit POST /api/cart/add, guests write localStorage."},
+    {"ac": 3, "criterion": "Visual indicator after add", "components": ["AddToCartButton"], "behavior": "react-toastify success toast 'Item added to cart!' plus button state 'Added ✓' for about 2s and an aria-live announcement."},
+    {"ac": 4, "criterion": "Header cart counter updates in real time", "components": ["cartSlice", "CartIcon", "Header"], "behavior": "CartIcon selects cart.count; the slice updates synchronously on fulfilled, so the header re-renders without reload. Count is hydrated from localStorage (guest) or GET /api/cart (logged-in) on load."},
+    {"ac": 5, "criterion": "Out-of-stock button disabled and labelled", "components": ["AddToCartButton", "ProductCard"], "behavior": "getButtonState(inStock=false) returns disabled 'Out of Stock'; the click handler returns early; a 409 from the API also moves the button to out_of_stock."},
+    {"ac": 6, "criterion": "Guest cart stored in local storage/session", "components": ["cartStorage", "cartSlice", "authSlice", "App"], "behavior": "When isAuthenticated is false the thunk uses addGuestItem (localStorage key 'guest_cart'); App hydrates it on load."},
+    {"ac": 7, "criterion": "Logged-in cart syncs with backend DB", "components": ["cartSlice", "authSlice", "cartService", "CartApi (backend)"], "behavior": "When isAuthenticated is true the thunk calls POST /api/cart/add and replaces state with the server's authoritative { items, count }; on login the guest cart is merged via POST /api/cart/merge (assumed) and cleared locally."}
+  ],
+  "security_controls": [
+    "Input validation (client and server): productId must match ^[A-Za-z0-9_-]{1,64}$ and quantity must be an integer 1..99; enforced in the addToCart thunk, cartService and cartStorage, and re-validated server-side in /api/cart/add and /api/cart/merge. Reject unknown fields and payloads over a small size limit (for example 10 KB).",
+    "AuthN for logged-in sync: /api/cart/add, /api/cart and /api/cart/merge require an authenticated session (HttpOnly, Secure, SameSite cookie; axios withCredentials). The client authSlice stores only a boolean, never tokens or credentials. The server derives the user from the session, never from a client-supplied userId (prevents IDOR / broken access control).",
+    "AuthZ: users can only read or modify their own cart; no cart or user identifier is accepted in the path or body.",
+    "XSS-safe rendering: product name, price and toast text are rendered through React's default escaping; dangerouslySetInnerHTML is forbidden; toast messages are fixed constants, never server-supplied strings; imageUrl is rendered only if isSafeImageUrl passes (http/https, no javascript: or data: URLs).",
+    "Safe localStorage handling: stored data is untrusted; loadGuestCart parses in try/catch and validates the full schema (max 100 entries, validated fields) and returns [] on any failure; only productId/quantity are stored (no PII, prices, tokens or session data); writes are wrapped in try/catch for quota/security errors; prices are never trusted from client storage (server recomputes).",
+    "Server-side authority for stock and price: out-of-stock is enforced server-side (409) in addition to the UI disabling the button; a client-supplied price is never accepted.",
+    "No secrets in code: the API base URL comes from the REACT_APP_API_BASE_URL environment variable; no keys, tokens or credentials in src/ or design artifacts; backend DB/session secrets come from environment variables or a secret manager. Only non-secret REACT_APP_* values are exposed to the browser bundle.",
+    "Safe error messages: the client maps all failures to fixed messages (e.g. 'Could not add item. Please try again.'); server error bodies, stack traces, SQL or internal codes are never displayed or returned; the backend returns generic bodies with correlation IDs only.",
+    "No PII or secrets in logs: the client does not console.log cart payloads or errors in production; the backend logs only productId, quantity, an opaque user reference and a correlation ID; never cookies, session IDs, addresses or emails.",
+    "CSRF: because the API uses cookie auth, require SameSite cookies plus a CSRF token header (double-submit or synchronizer token) or a strict Origin/Referer check on state-changing POSTs; enforce JSON-only Content-Type; CORS allow-list of the known frontend origin only (no wildcard with credentials).",
+    "Rate limiting and abuse control: per-user/IP rate limit on POST /api/cart/add and /api/cart/merge (429 on exceed); the client disables the button while a request is in flight (status 'adding') to prevent double-submits; cart size capped at 100 entries and 99 per item.",
+    "Injection: the backend uses parameterized queries or an ORM only for cart persistence; no string-concatenated SQL/NoSQL; the JSON body is parsed with a schema validator.",
+    "Transport and headers: HTTPS only (HSTS), Secure cookies, Content-Security-Policy restricting script-src to self and img-src to approved image hosts, X-Content-Type-Options: nosniff.",
+    "Dependency hygiene: pin versions in package.json/lockfile and run npm audit in CI to address vulnerable components (OWASP A06).",
+    "Request timeout (10s) and generic fallbacks so failed or slow calls cannot leave the UI stuck in the 'adding' state.",
+    "Synthetic data only: catalogue and test fixtures use demo data; no real customer data."
+  ],
+  "owasp_checklist": [
+    {"check": "1. Injection (parameterized queries only)", "status": "pass", "location": "CartApi (backend) persistence; client has no SQL", "fix": "Backend must use ORM/prepared statements and schema-validate the body."},
+    {"check": "2. Input validation on every request DTO", "status": "pass", "location": "validators, AddToCartRequestDTO, cartService, cartStorage", "fix": "Mirror the same rules server-side (Bean-Validation equivalent such as Joi/zod/express-validator)."},
+    {"check": "3. AuthN/AuthZ stated per endpoint", "status": "pass", "location": "endpoints[].access", "fix": "n/a; the auth mechanism is tracked as an open question."},
+    {"check": "4. Secrets (none hardcoded; env vars)", "status": "pass", "location": "cartService REACT_APP_API_BASE_URL; design.json contains no secrets", "fix": "n/a"},
+    {"check": "5. Error handling (no stack traces/internal details)", "status": "pass", "location": "cartService.mapError, endpoint error responses", "fix": "Backend must return generic bodies."},
+    {"check": "6. Logging (no PII or secrets)", "status": "pass", "location": "security_controls", "fix": "Enforce in backend logging config and code review."}
+  ],
+  "threats": [
+    {"threat": "A01 Broken Access Control / IDOR: attacker modifies another user's cart by supplying a userId or cartId", "mitigation": "No user or cart identifiers accepted from the client; the server derives the user from the authenticated session; every query is scoped to that user."},
+    {"threat": "A03 Injection: malicious productId/quantity reaching the DB (SQL/NoSQL injection)", "mitigation": "Strict allow-list regex and integer range validation on client and server; parameterized queries/ORM only; unknown fields rejected."},
+    {"threat": "A03 XSS: product name/imageUrl or server messages containing script, or javascript: image URLs", "mitigation": "React escaping only, no dangerouslySetInnerHTML; fixed-constant toast text; isSafeImageUrl allows http/https only; Content-Security-Policy."},
+    {"threat": "A04/A08 Insecure design / tampering of the localStorage guest cart (edited quantity, prices, huge payloads, malformed JSON)", "mitigation": "Treat localStorage as untrusted: full schema validation with size caps, fall back to an empty cart, store no prices; the server recomputes price and stock when the cart is merged or checked out."},
+    {"threat": "A01/A05 CSRF on state-changing cart endpoints using cookie auth", "mitigation": "SameSite cookies, CSRF token or Origin check, JSON Content-Type enforced, CORS allow-list without wildcard."},
+    {"threat": "A07 Identification and Authentication Failures: expired/forged session used for cart sync", "mitigation": "The server validates the session on every call and returns 401; the client shows a generic re-login message and does not fall back to unauthenticated server writes; no tokens kept in JS-readable storage."},
+    {"threat": "A05 Security Misconfiguration / information disclosure via verbose errors", "mitigation": "Generic client-facing messages mapped in mapError; the backend returns generic bodies and logs details server-side only; production builds without source maps or DevTools."},
+    {"threat": "A09 Logging failures / sensitive data exposure in logs", "mitigation": "Log only opaque identifiers, productId, quantity and a correlation ID; never cookies, tokens or emails; no console logging of payloads in the client."},
+    {"threat": "Denial of service / abuse: automated add-to-cart flooding or oversized guest cart", "mitigation": "Per-user and IP rate limiting (429), in-flight button lock, 100-entry and 99-quantity caps, request size limit and 10s client timeout."},
+    {"threat": "A06 Vulnerable and outdated components (axios, react-scripts, react-toastify)", "mitigation": "Lockfile, npm audit/dependabot in CI, minimal dependency set."},
+    {"threat": "Stock bypass: attacker re-enables the disabled Out of Stock button via DevTools and posts the add request", "mitigation": "The server re-checks inventory and returns 409; the UI is not the authority for stock."},
+    {"threat": "A02 Cryptographic failures: cart or session data intercepted in transit", "mitigation": "HTTPS/HSTS only, Secure and HttpOnly cookies; no sensitive data stored in localStorage."}
+  ],
+  "assumptions": [
+    "Guest storage is localStorage (key 'guest_cart') rather than sessionStorage so the guest cart persists across tabs and browser restarts; the spec's 'local storage/session' wording is ambiguous.",
+    "API contract assumed: POST /api/cart/add accepts { productId, quantity } and returns { items: [{productId, quantity}], count }; status codes 400/401/403/404/409/429/500 as listed. GET /api/cart, POST /api/cart/merge and GET /api/products are assumed additions and not part of the ticket.",
+    "Authentication is a session cookie (HttpOnly) managed by the host app's login flow; the frontend only holds an isAuthenticated boolean (authSlice) and sends credentials with withCredentials.",
+    "Out-of-stock is conveyed by product.inStock=false from the catalogue and by HTTP 409 from /api/cart/add.",
+    "Default quantity per click is 1; the maximum per product is 99 and 100 distinct entries per cart (design limits, not from the ticket).",
+    "Epic 'Shopping Cart & Checkout' and Jira priority 'Medium' are taken from spec.json as given; the Jira field is treated as authoritative over the description text.",
+    "Responsive behavior (desktop and mobile) is handled in src/styles.css and verified by tests; there is no separate mobile component tree.",
+    "All data is synthetic (demo catalogue); no real customer data is used."
+  ],
+  "open_questions": [
+    "Priority mismatch: Jira priority field is 'Medium' but the description text states 'Priority: High'. Jira field value used.",
+    "Epic: the Jira 'parent' field was not returned; epic 'Shopping Cart & Checkout' is taken from the description text. Also, the Jira issue type is returned as 'Epic' while the description says 'Story'.",
+    "Technical notes/Definition of Done in the ticket (not acceptance criteria): API endpoint /api/cart/add must be integrated; unit tests for In stock, Out of stock and Success states; tested on desktop and mobile responsive views.",
+    "Backend contract for /api/cart/add (request/response schema, auth for logged-in users) is not specified. Design assumes the contract listed in 'assumptions'.",
+    "Guest storage choice is ambiguous ('local storage/session'): localStorage or sessionStorage is not decided. Design assumes localStorage.",
+    "Guest-to-logged-in cart merge on login is not specified in the ACs: should guest items merge into the server cart (assumed POST /api/cart/merge), replace it, or be discarded?",
+    "Should adding an item already in the cart increment its quantity (assumed) or be rejected, and what is the per-item maximum (assumed 99)?",
+    "Which CSRF mechanism and CORS origin policy does the backend use (token header vs. Origin check)?"
+  ]
+}
