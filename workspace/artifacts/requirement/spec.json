@@ -1,0 +1,23 @@
+{
+  "story_id": "CCP-1",
+  "title": "Add \"Add to Cart\" Button on Product Listing Page",
+  "epic": "Shopping Cart & Checkout",
+  "priority": "Medium",
+  "acceptance_criteria": [
+    "Button Visibility: An \"Add to Cart\" button must be displayed on every product card in the product listing/catalog view.",
+    "Action & Feedback: When clicked, the item is successfully added to the user's shopping cart.",
+    "Action & Feedback: A visual indicator (e.g., a toast notification like \"Item added to cart!\" or a quick button state change to \"Added ✓\") is shown to the user.",
+    "Action & Feedback: The cart icon counter in the website header updates dynamically in real-time to reflect the new item count.",
+    "Inventory Handling: If a product is out of stock, the button should be disabled and labeled as \"Out of Stock\".",
+    "Guest vs. Logged-in Users: For guest users, the cart items must be stored in local storage/session.",
+    "Guest vs. Logged-in Users: For logged-in users, the cart items must sync with the backend database."
+  ],
+  "source_url": "https://epam-team-piqzdqdk.atlassian.net/browse/CCP-1",
+  "open_questions": [
+    "Priority mismatch: Jira priority field is 'Medium' but the description text states 'Priority: High'. Jira field value used.",
+    "Epic: the Jira 'parent' field was not returned; epic 'Shopping Cart & Checkout' is taken from the description text. Also, the Jira issue type is returned as 'Epic' while the description says 'Story'.",
+    "Technical notes/Definition of Done in the ticket (not acceptance criteria): API endpoint /api/cart/add must be integrated; unit tests for In stock, Out of stock and Success states; tested on desktop and mobile responsive views.",
+    "Backend contract for /api/cart/add (request/response schema, auth for logged-in users) is not specified.",
+    "Guest storage choice is ambiguous ('local storage/session'): localStorage or sessionStorage is not decided."
+  ]
+}
