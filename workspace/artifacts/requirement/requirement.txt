@@ -1,0 +1,34 @@
+### **Jira Story: Add "Add to Cart" Button on Product Listing Page**
+
+- **Issue Type:** Story
+- **Epic:** Shopping Cart & Checkout
+- **Priority:** High
+- **Assignee:** Frontend Developer
+
+#### **User Story**
+
+> **As a** customer browsing the e-commerce website,
+> **I want to** click an "Add to Cart" button directly on the product listing page,
+> **So that** I can add items to my shopping cart quickly without needing to open each product's details page.
+
+----
+
+#### **Acceptance Criteria**
+
+1. **Button Visibility:** An "Add to Cart" button must be displayed on every product card in the product listing/catalog view.
+1. **Action & Feedback:**
+  - When clicked, the item is successfully added to the user's shopping cart.
+  - A visual indicator (e.g., a toast notification like *"Item added to cart!"* or a quick button state change to *"Added ✓"*) is shown to the user.
+  - The cart icon counter in the website header updates dynamically in real-time to reflect the new item count.
+1. **Inventory Handling:** If a product is out of stock, the button should be disabled and labeled as *"Out of Stock"*.
+1. **Guest vs. Logged-in Users:**
+  - For guest users, the cart items must be stored in local storage/session.
+  - For logged-in users, the cart items must sync with the backend database.
+
+----
+
+#### **Technical Notes / Definition of Done**
+
+- API endpoint `/api/cart/add` must be integrated.
+- Unit tests written and passed for UI component states (In stock, Out of stock, Success state).
+- Tested on desktop and mobile responsive views.

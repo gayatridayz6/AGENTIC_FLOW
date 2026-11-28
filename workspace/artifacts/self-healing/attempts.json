@@ -1,0 +1,11 @@
+{
+  "attempts": 1,
+  "history": [
+    {
+      "attempt": 1,
+      "ts": "2026-11-28T12:30:48+00:00",
+      "passed": true,
+      "stderr_tail": ""
+    }
+  ]
+}

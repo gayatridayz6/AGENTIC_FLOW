@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "attempts": 1,
+  "max_retries": 3,
+  "line_coverage_pct": 95.74,
+  "function_coverage_pct": 97.67,
+  "branch_coverage_pct": 81.35,
+  "statement_coverage_pct": 93.16,
+  "tests_total": 30,
+  "tests_passed": 30,
+  "tests_failed": 0,
+  "updated_at": "2026-11-28T12:30:48+00:00"
+}
